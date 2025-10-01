@@ -6,9 +6,9 @@ email: ed.li@yale.edu
 
 # Theme - choose one of these popular options:
 # Options: minima, cayman, slate, minimal, modernist, midnight, architect, tactile, leap-day, time-machine
-theme: cayman
+theme: minimal
 
-# Optional: Custom colors (for Cayman theme)
+# Optional: Custom colors
 # Uncomment and customize if desired
 # cayman:
 #   primary_color: '#159957'

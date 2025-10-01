@@ -1,31 +1,27 @@
-# freephdlabor: Towards Bespoke Multiagent Systems for Automated Scientific Discovery
+# freephdlabor: customizing your own multiagent system to do scientific research in your field 24/7 in hours
 
-**TL;DR:** Like ChatGPT Pulse prepares your morning briefing, freephdlabor advances your research overnight—generating ideas, running experiments, and drafting papers while you sleep.
+**TLDR:** An "one-size-fits-all" agentic system for all scientific domains/use cases is unfortunately not yet possible. However, freephdlabor is a *modular* multiagent system that continually automates all stages of standard AI research (idea conception to latex-formatted papers with figure showing figures and citations). The *modular* design, support features, and empirical guidelines together allow you to build, test, and ship your multiagent system *tailored to your own domain/use case* within hours.
 
+You can have your random eureka moment tested and receives a report the next morning:
+
+[like an pdf viewer for example paper?]
+
+**We can also see it in action:**
+
+<video width="720" height="480" controls>
+  <source src="videos/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+Disclaimer: the rest of the blog covers the various design choices and intuitions we gathered from building it. Feel free to skip to [https://github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor) to start playing around with it or start building.
+
+alternatively: this could be a great weekend project to have an extra brain (or extra brains) to work alongside you on the same problems + link
 ---
+## Motivation
 
-**Imagine waking up to this:**
+"continue to scale better"
 
-- ✅ Your IdeationAgent found 3 research gaps from 40+ papers reviewed overnight
-- ✅ Your ExperimentationAgent ran 12 baseline comparisons while you slept
-- ✅ Your WriteupAgent drafted the methods section based on yesterday's results
-- ✅ Your ReviewerAgent flagged 2 critical issues before submission
-
-**This is freephdlabor**—your personal research group working 24/7 on *your* research topics.
-
-ChatGPT Pulse works while you sleep to prepare personalized briefings. **freephdlabor works while you sleep to conduct your research**. It's like having a full lab group (PI, postdocs, PhD students) that never sleeps, never complains, and adapts to any scientific domain.
-
-**Why "freephdlabor"?** Because every PhD student deserves free PhD labor—their own tireless research team.
-
----
-
-**Ed Li** • Yale University • [ed.li@yale.edu](mailto:ed.li@yale.edu)
-
-**Code**: [https://github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
-
----
-
-## Introduction
+OpenAI just dropped GPT Pulse that works while you sleep to prepare personalized briefings; a core strength of Claude 4.5 Sonnet is to be able to work over longer horizons. The general trend seems to be moving towards 
 
 The most exciting goal for AI systems today is arguably to **autonomously perform scientific research** (perhaps aside from direct self-improvement). Over the past year, there have been numerous attempts at automating science through "agentic systems," such as AI-Scientist[^3], Zochi[^4], and others. However, these systems have been restricted to **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics, regardless of their unique characteristics.
 
@@ -41,19 +37,17 @@ To fulfill this vision, freephdlabor is an multiagent system to automate the sci
 - **Fully Agentic/Dynamic Workflows**: All invocation of tools or agents should depends on LLM outputs.
 - **Customizable/Modular**: Each agents, or even tools now only form part of the overall system/environment, allowing easy customization tailored to individual needs.
 - **Robust Memory/Communication Mechanisms**: All agents have accessed to a structured workspace folder that can serve both as an external memory AND as an communication channel with much larger bandwidth.
-- **Continual**: freephdlabor can continue from finished runs, allowing human inputs between runs.
+- **Continual/Human-in-the-loop**: freephdlabor can be interrupted, take inputs from the user, then resumes; it can also continue from finished runs, allowing sustained, continual investigation of an research topic in-depth.
 
-
-
----
-
-We now dedicate the rest of this blog to discussing the various design choices we made along the way. It is worth noting that the system we designed is only an example and does not limit the space of choices you can make. We nevertheless strive to explain why we did what we did to provide intuitions for your own customizations. In particular, we won't go into agent- or tool-level details, which can be found in the [full technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
+In this blog, we won't go into agent- or tool-level details, which can be found in the [full technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
 
 ### System Architecture Overview
 
 <img src="figures/architecture.png" alt="freephdlabor Architecture" width="800">
 
-*Figure 1: **Multi-Agent System Architecture**. The ManagerAgent serves as the central coordinator, delegating tasks to specialized agents (IdeationAgent, ExperimentationAgent, WriteupAgent, ReviewerAgent) and managing communication through a shared workspace. Blue arrows indicate delegation relationships, red arrows show reporting back to the manager, and green arrows represent file-based communication through the workspace.*
+*Figure 1: **Multi-Agent System Architecture**. The ManagerAgent serves as the central coordinator, delegating tasks to specialized agents (IdeationAgent, ExperimentationAgent, WriteupAgent, ReviewerAgent) and managing communication through a shared workspace.*
+
+In this blog, we won't go into agent- or tool-level details, which can be found in the [full technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
 
 ## Overcoming Context Window Limitations
 
