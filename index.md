@@ -1,4 +1,4 @@
-# freephdlabor: Your Research Team That Works While You Sleep
+# freephdlabor: Towards Bespoke Multiagent Systems for Automated Scientific Discovery
 
 **TL;DR:** Like ChatGPT Pulse prepares your morning briefing, freephdlabor advances your research overnight—generating ideas, running experiments, and drafting papers while you sleep.
 
