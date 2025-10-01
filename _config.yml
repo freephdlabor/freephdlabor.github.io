@@ -5,8 +5,8 @@ author: Ed Li
 email: ed.li@yale.edu
 
 # Theme - choose one of these popular options:
-# Options: minima, cayman, slate, minimal, modernist, midnight, architect, tactile, leap-day, time-machine
-theme: minimal
+# Options: minima, cayman, slate, midnight, architect, tactile, leap-day, time-machine
+theme: minima
 
 # Optional: Custom colors
 # Uncomment and customize if desired
