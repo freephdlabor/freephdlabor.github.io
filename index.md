@@ -86,11 +86,36 @@ Allowing agents to communicate through a single `string` at a time is problemati
 A much better alternative is to **write important information as files** inside a shared workspace folder, communicating only the file name and location (or even better, with a brief summary of its content) to another agent. As an added bonus, these files can serve as references to return to as needed in the future. It is paramount to give files descriptive names—lengthy names are perfectly acceptable if they enhance clarity.
 
 It is also important to impose structure on the workspace, as the number of files can accumulate over time. In our example system, we create a dedicated subfolder for each agent and describe the expected folder structure to maintain as a paragraph in each individual agent's system prompts.
-### Context compaction 
-The context window of each individual agents gets long over time. We have thus added the context compaction
+### Context Compaction - Thinking Long-Term
 
-[TODO for Junyu: concisely describe how it is implemented, how memory works in smolagents have been explained earlier in blog.]
-[... and ends on: how this feature, together with external files saved in the workspace serving as external memory, allow the system to explore a research direction continually as a *research program*, not just a one-off *attempt*.]
+Remember how we mentioned that agents review their complete conversation history at each step? That's powerful for reasoning, but it creates a problem: **context windows grow over time**.
+
+Imagine running a week-long research project. Without intervention, your agent's memory would balloon to millions of tokens, hitting model limits and grinding to a halt. We need a smarter solution.
+
+**Our approach**: Automatic context compaction that kicks in when needed. Here's how it works:
+
+The `ContextMonitoringCallback` continuously monitors each agent's memory. When estimated tokens exceed **75% of the model's context limit**, the `AutomaticContextCompactor` springs into action with a three-phase process:
+
+1. **External Backup**: Serialize all steps to JSONL files in `workspace_dir/memory_backup/`. Nothing is lost—complete conversation history (tool calls, observations, reasoning, errors, timing) is preserved for debugging or analysis.
+
+2. **Intelligent Summarization**: Extract comprehensive context across multiple dimensions:
+   - Tool usage statistics with recent call details
+   - Key observations prioritized by recency and size
+   - Recent model reasoning
+   - Encountered errors
+   - Final outputs
+
+3. **Memory Reconstruction**: Rebuild the agent's memory with one compacted ActionStep containing the summary **plus the last 3 meaningful ActionSteps**, maintaining short-term context while dramatically reducing token count.
+
+This enables **theoretically unbounded conversation length** while staying within model limits. Combined with the workspace files serving as external memory, this allows freephdlabor to explore research directions continually as **research programs**, not just one-off attempts.
+
+### Memory Persistence - Pick Up Where You Left Off
+
+Context compaction handles growing conversations *within* a single session. But what about **preserving progress across sessions**?
+
+The system automatically saves the complete memory of all agents—every execution step with detailed reasoning traces, tool usage history, and inter-agent interactions. When combined with workspace files, this creates a **comprehensive record of the entire research trajectory**.
+
+Resuming is simple: just specify the workspace you wish to continue from (with memory files in place). The system reconstructs the entire multi-agent environment from the saved state, allowing agents to **continue exactly where they left off**. This enables running freephdlabor to explore a dedicated direction of your choice without loss of previous context.
 
 
 ## Infrastructure and Support Features
@@ -115,11 +140,15 @@ We have added two **Claude Code slash commands**:
 
 At the moment, suggested improvements center around system prompts, but in the future, with better context engineering and coding assistants, we plan to support more general improvements involving code changes.
 
-### Human-in-the-Loop Features
+### Real-time User Interruption - You're Still in Control
 
-**Interruption Mechanism**: Users can interrupt the system at any time to provide feedback or course corrections before continuing the run. This balances autonomy with human oversight.
+A key feature that sets freephdlabor apart is its **interruption mechanism**. Think of it as a "tap on the shoulder" for your AI research team—you can intervene at any time while still letting agents operate autonomously most of the time.
 
-**Continuation from Checkpoints**: freephdlabor can continue from any completed workspace, allowing iterative refinement and human feedback between runs.
+**How it works**: The system listens continuously in the background for user input signals, independent of the agent's workflow. After each step completes (via callback functions from the smolagents framework), the mechanism checks for recorded signals. If an interrupt is present, the agent **pauses execution** and prompts you for new instructions—either to refine the current task or initiate a new one. These instructions are stored in the agent's memory and incorporated into subsequent steps.
+
+This creates a **collaborative loop** where agents remain self-directed most of the time, yet always receptive to human guidance when needed. The balance between autonomy and responsiveness makes the system more interactive, adaptable, and trustworthy.
+
+**Continuation from Checkpoints**: Beyond real-time interruption, freephdlabor can continue from any completed workspace. This allows iterative refinement where you can review results, provide feedback, and resume the research program with your new insights incorporated.
 
 ## Current Limitations & Future Directions
 
@@ -131,11 +160,15 @@ At the moment, suggested improvements center around system prompts, but in the f
 
 ### Future Research Directions
 
-**Specialization via Fine-Tuning**: A commonly stated advantage of multi-agent systems is specialization via system prompts. However, we believe an underappreciated advantage is **specialization via fine-tuning**. The major bottleneck lies in the amount of data/capability we can post-train into each LLM without interfering with other capabilities.
+**Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the `RunExperimentTool` (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like **ToolUniverse**[^7] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
 
-Since `agent_llm_calls.jsonl` contains the LLM calls (i.e., state-action pairs) of different agents, it would be interesting to **fine-tune agents using curated versions of those trajectories**. This could enable domain-specific expertise while maintaining general capabilities.
+**Context Engineering Benefits**: A commonly stated advantage of multi-agent systems is specialization via system prompts. Through building freephdlabor, we've discovered that **delegation of certain tasks to other agents can significantly reduce the burden on individual context windows**, enabling more sophisticated reasoning chains. As context engineering capabilities improve, this architectural benefit becomes increasingly valuable.
 
-**Context Engineering**: As context engineering capabilities improve, we notice that delegation of certain tasks to other agents can significantly reduce the burden on individual context windows, enabling more sophisticated reasoning chains.
+**In-Context Learning for Improvement**: Currently, the most straightforward way for agents in freephdlabor to "learn" between different runs is through in-context learning—incorporating information into system prompts or as files in the workspace upon initialization. While effective, this approach has drawbacks: the information takes up precious context window space and can distract agents when tasks are unrelated to saved information.
+
+**Specialization via Fine-Tuning**: We believe an underappreciated advantage of the multi-agent approach is **specialization via fine-tuning**. The major bottleneck in traditional fine-tuning lies in the amount of data/capability we can post-train into each LLM without interfering with other capabilities.
+
+Since `agent_llm_calls.jsonl` contains the LLM calls (i.e., state-action pairs) of different agents across runs, it would be fascinating to **fine-tune individual agents using curated versions of those trajectories**. This approach could enable deep domain-specific expertise while maintaining general capabilities—each agent becomes a specialist through targeted fine-tuning on its own behavioral data.
 
 ### Main Trade-off: Stability & How to Ameliorate That
 
@@ -173,3 +206,5 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 [^5]: Agrawal, P., et al. (2025). *GEPA: Reflective Prompt Evolution for Agent Improvement*.
 
 [^6]: Zhang, Y., et al. (2025). *AgentTracer: Inducing Failure in LLM Agents for Better Understanding*.
+
+[^7]: Gao, J., et al. (2025). *Democratizing AI Scientists Using Tool Universe*.
