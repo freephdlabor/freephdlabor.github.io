@@ -19,10 +19,11 @@ alternatively: this could be a great weekend project to have an extra brain (or 
 ---
 ## Motivation
 
+OpenAI just dropped GPT Pulse that works while you sleep to prepare personalized briefings; 
+a core strength of Claude 4.5 Sonnet is to be able to work over longer horizons;
+The general trend seems to be moving towards 
+
 "continue to scale better"
-
-OpenAI just dropped GPT Pulse that works while you sleep to prepare personalized briefings; a core strength of Claude 4.5 Sonnet is to be able to work over longer horizons. The general trend seems to be moving towards 
-
 The most exciting goal for AI systems today is arguably to **autonomously perform scientific research** (perhaps aside from direct self-improvement). Over the past year, there have been numerous attempts at automating science through "agentic systems," such as AI-Scientist[^3], Zochi[^4], and others. However, these systems have been restricted to **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics, regardless of their unique characteristics.
 
 This is fundamentally different from how humans conduct research. A PhD candidate (a type of agent) can decide at any given time between:
@@ -41,27 +42,15 @@ To fulfill this vision, freephdlabor is an multiagent system to automate the sci
 
 In this blog, we won't go into agent- or tool-level details, which can be found in the [full technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
 
+## Challenge 1: Modularity
+
+Building a customizable multi-agent system requires clean interfaces and modular design. freephdlabor addresses this through four key mechanisms:
+
 ### System Architecture Overview
 
 <img src="figures/architecture.png" alt="freephdlabor Architecture" width="800">
 
 *Figure 1: **Multi-Agent System Architecture**. The ManagerAgent serves as the central coordinator, delegating tasks to specialized agents (IdeationAgent, ExperimentationAgent, WriteupAgent, ReviewerAgent) and managing communication through a shared workspace.*
-
-In this blog, we won't go into agent- or tool-level details, which can be found in the [full technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
-
-## Overcoming Context Window Limitations
-
-LLMs are pure functions—without tuning hyperparameters like temperature, their outputs depend entirely on what's in the context window.
-
-In the case of our agents, what exactly goes into the context window? When an agent in freephdlabor runs, it reviews all past memories (the full conversation context), generates an action (like calling a tool or writing code), observes the results, and saves this entire cycle as another step in memory for future reference.
-
-<img src="figures/memory.png" alt="Agent Memory Cycle" width="700">
-
-*Figure 2: **Agent Memory and Action Cycle**. An agent receives inputs from its system prompt and memory (containing task and action steps), generates actions through tool calls, receives observations from execution, and appends the action-observation pair to memory for future steps.*
-
-This means the agent's context includes not just the current task, but the complete history of reasoning, actions, and observations from previous steps. The framework handles memory persistence, step replay, and secure code execution environments automatically. While this memory-based approach enables sophisticated multi-step reasoning, it also means context windows can grow large over time—which is why we implement context compaction strategies.
-
-For deeper understanding of the ReAct methodology, see [Yao et al. (2022)](https://arxiv.org/abs/2210.03629)[^1], and for complete implementation details, check the [HuggingFace smolagents documentation](https://huggingface.co/docs/smolagents)[^2].
 
 ### ManagerAgent - PI of a Research Lab
 
@@ -75,50 +64,15 @@ For this reason, in our example system we designate a **ManagerAgent** to handle
 
 Thus, delegating to an agent is as simple as calling a tool with instructions as a parameter. The delegated agent will start a run of its own, call a variable number of tools to achieve the goal specified in its system prompt plus instructions from ManagerAgent, and call the `final_answer` tool when ready to report back to ManagerAgent, with the report passed as an argument to the `final_answer` tool.
 
-### Workspace - A Notepad for Communication and Memory
+This *hub-and-spoke* design also makes the design more *modular*: the central ManagerAgent functions as an intelligent 'adapter' that requires user to readjust any agent twice (i.e., it can receives enough info from ManagerAgent to perform its job AND reports results to the same agent effectively) rather than having to repeat so for all other agents. This vastly decreases the amount of trial-and-error to, say, integrate a new agent into freephdlabor.
+
+### Workspace - Clean File-Based Interfaces
 
 Allowing agents to communicate through a single `string` at a time is problematic for many reasons, the biggest of which is that it introduces the **"game of telephone"** effect, where an agent needs to transcribe information one or more times before another agent can access it.
 
 <img src="figures/game_of_telephone.png" alt="Game of Telephone Problem" width="650">
 
-*Figure 4: **The Game of Telephone Problem**. When agents communicate through string-based message passing, information gets distorted at each transmission step. What starts as a cat becomes a different interpretation at each agent, ultimately resulting in miscommunication. File-based workspace communication avoids this by allowing direct access to the original information.*
-
-A much better alternative is to **write important information as files** inside a shared workspace folder, communicating only the file name and location (or even better, with a brief summary of its content) to another agent. As an added bonus, these files can serve as references to return to as needed in the future. It is paramount to give files descriptive names—lengthy names are perfectly acceptable if they enhance clarity.
-
-It is also important to impose structure on the workspace, as the number of files can accumulate over time. In our example system, we create a dedicated subfolder for each agent and describe the expected folder structure to maintain as a paragraph in each individual agent's system prompts.
-### Context Compaction - Thinking Long-Term
-
-Remember how we mentioned that agents review their complete conversation history at each step? That's powerful for reasoning, but it creates a problem: **context windows grow over time**.
-
-Imagine running a week-long research project. Without intervention, your agent's memory would balloon to millions of tokens, hitting model limits and grinding to a halt. We need a smarter solution.
-
-**Our approach**: Automatic context compaction that kicks in when needed. Here's how it works:
-
-The `ContextMonitoringCallback` continuously monitors each agent's memory. When estimated tokens exceed **75% of the model's context limit**, the `AutomaticContextCompactor` springs into action with a three-phase process:
-
-1. **External Backup**: Serialize all steps to JSONL files in `workspace_dir/memory_backup/`. Nothing is lost—complete conversation history (tool calls, observations, reasoning, errors, timing) is preserved for debugging or analysis.
-
-2. **Intelligent Summarization**: Extract comprehensive context across multiple dimensions:
-   - Tool usage statistics with recent call details
-   - Key observations prioritized by recency and size
-   - Recent model reasoning
-   - Encountered errors
-   - Final outputs
-
-3. **Memory Reconstruction**: Rebuild the agent's memory with one compacted ActionStep containing the summary **plus the last 3 meaningful ActionSteps**, maintaining short-term context while dramatically reducing token count.
-
-This enables **theoretically unbounded conversation length** while staying within model limits. Combined with the workspace files serving as external memory, this allows freephdlabor to explore research directions continually as **research programs**, not just one-off attempts.
-
-### Memory Persistence - Pick Up Where You Left Off
-
-Context compaction handles growing conversations *within* a single session. But what about **preserving progress across sessions**?
-
-The system automatically saves the complete memory of all agents—every execution step with detailed reasoning traces, tool usage history, and inter-agent interactions. When combined with workspace files, this creates a **comprehensive record of the entire research trajectory**.
-
-Resuming is simple: just specify the workspace you wish to continue from (with memory files in place). The system reconstructs the entire multi-agent environment from the saved state, allowing agents to **continue exactly where they left off**. This enables running freephdlabor to explore a dedicated direction of your choice without loss of previous context.
-
-
-## Infrastructure and Support Features
+A much better alternative is to **write important information as files** inside a shared workspace folder, communicating only the file path (or even better, with a brief summary of its content) to another agent. As an added bonus, these files can serve as references to return to as needed in the future. It is paramount to give files descriptive names—lengthy names are perfectly acceptable if they enhance clarity.
 
 ### Auto Prompt Optimization
 
@@ -140,7 +94,7 @@ We have added two **Claude Code slash commands**:
 
 At the moment, suggested improvements center around system prompts, but in the future, with better context engineering and coding assistants, we plan to support more general improvements involving code changes.
 
-### Real-time User Interruption - You're Still in Control
+### Real-time User Interruption - Human-in-the-Loop Customization
 
 A key feature that sets freephdlabor apart is its **interruption mechanism**. Think of it as a "tap on the shoulder" for your AI research team—you can intervene at any time while still letting agents operate autonomously most of the time.
 
@@ -150,7 +104,41 @@ This creates a **collaborative loop** where agents remain self-directed most of 
 
 **Continuation from Checkpoints**: Beyond real-time interruption, freephdlabor can continue from any completed workspace. This allows iterative refinement where you can review results, provide feedback, and resume the research program with your new insights incorporated.
 
-## Current Limitations & Future Directions
+## Challenge 2: Context Engineering and Organization
+
+LLMs are pure functions—without tuning hyperparameters like temperature, their outputs depend entirely on what's in the context window. Effective long-term autonomous operation requires managing both context length and ensuring that the right information is available at the right time.
+
+### Agent Memory Cycle
+
+When an agent in freephdlabor runs, it reviews all past memories (the full conversation context), generates an action (like calling a tool or writing code), observes the results, and saves this entire cycle as another step in memory for future reference.
+
+<img src="figures/memory.png" alt="Agent Memory Cycle" width="700">
+
+This means the agent's context includes not just the current task, but the complete history of reasoning, actions, and observations from previous steps. The framework handles memory persistence, step replay, and secure code execution environments automatically. While this memory-based approach enables sophisticated multi-step reasoning, it also means context windows can grow large over time—which is why we implement multiple context management strategies.
+
+For complete implementation details, check the [HuggingFace smolagents documentation](https://huggingface.co/docs/smolagents)[^2].
+
+### Context Compaction - Thinking Long-Term
+
+OK, now that we have lessened the burden on context window a little bit, it's still not enough to make freephdlabor work **24/7**.
+
+So we added a feature 'inspired' by Claude Code to automatically compact the context: when tokens exceed **75% of the model's limit**, the `AutomaticContextCompactor` kicks in: it intelligently summarizes the context—tool usage patterns, key observations, recent reasoning, errors encountered—and reconstructs the agent's memory with this compact summary **plus the last 3 ActionSteps**.
+
+### Memory Persistence - Pick Up Where You Left Off
+
+Context compaction handles growing conversations *within* a single session. But what about **preserving progress across sessions**?
+
+The system automatically saves the complete memory of all agents—every execution step with detailed reasoning traces, tool usage history, and inter-agent interactions. When combined with workspace files, this creates a **comprehensive record of the entire research trajectory**.
+
+Resuming is simple: just specify the workspace you wish to continue from (with memory files in place). The system reconstructs the entire multiagent environment from the saved state, allowing agents to **continue exactly where they left off**.
+
+### Workspace as External Memory
+
+The workspace folder also addresses context limitations by serving as **external memory that doesn't consume tokens**. Important information—experiment results, intermediate analyses, literature reviews—lives in files rather than taking up precious context space. Agents can reference these files when needed, dramatically extending their effective memory capacity beyond the token limit.
+
+With context compaction, memory persistence, and workspace-based external memory working together, you finally have free PhD labor that works 24/7 on topics of your interest—running experiments, generating reports, and most importantly, **building on previous lessons learned**.
+
+## Future Directions
 
 ### Known Failure Modes
 
