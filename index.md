@@ -1,10 +1,18 @@
+<div align="center">
+
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/ltjed/freephdlabor)
+[![Stars](https://img.shields.io/github/stars/ltjed/freephdlabor?style=for-the-badge)](https://github.com/ltjed/freephdlabor)
+[![Paper](https://img.shields.io/badge/Paper-Technical_Report-blue?style=for-the-badge&logo=arxiv)](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf)
+
+</div>
+
 # freephdlabor: customizing your own multiagent system to do scientific research in your field 24/7 in hours
 
 **TLDR:** An "one-size-fits-all" agentic system for all scientific domains/use cases is unfortunately not yet possible. However, freephdlabor is a *modular* multiagent system that continually automates all stages of standard AI research (idea conception to latex-formatted papers with figure showing figures and citations). The *modular* design, support features, and empirical guidelines together allow you to **build, test, and ship your multiagent system *tailored to your own domain/use case* within hours**.
 
 You can have your random eureka moment tested and receives a report the next morning:
 
-[like an pdf viewer for example paper?]
+<embed src="papers/example_paper.pdf" type="application/pdf" width="100%" height="600px" />
 
 **We can also see it in action:**
 
