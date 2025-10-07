@@ -1,3 +1,5 @@
+# `freephdlabor`: customizing your own research lab to do scientific research in your field 24/7
+
 <p align="center">
   <a href="https://github.com/ltjed/freephdlabor">
     <img src="https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github" alt="GitHub Repository">
@@ -9,8 +11,6 @@
     <img src="https://img.shields.io/badge/Paper-Technical_Report-blue?style=for-the-badge&logo=arxiv" alt="Technical Report">
   </a>
 </p>
-
-# `freephdlabor`: customizing your own interactive, research lab to do scientific research in your field 24/7 in hours
 
 **TLDR:** An "one-size-fits-all" agentic system for all scientific domains/use cases is unfortunately not yet possible. However, freephdlabor is a *modular* multiagent system that continually automates all stages of standard AI research (idea conception to latex-formatted papers with figure showing figures and citations). The *modular* design, support features, and empirical guidelines together allow you to **build, test, and ship your multiagent system *tailored to your own domain/use case* within hours**.
 
