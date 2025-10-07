@@ -25,7 +25,8 @@ You can have your random eureka moment tested and receives a report the next mor
   Your browser does not support the video tag.
 </video>
 
-Alternatively: a great weekend project would be to **customize our system for yourself**—once running, you'll have extra brains (or entire research teams) **working alongside you 24/7** on the same problems you care about: [github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
+A great weekend project would be to **customize our system for yourself**—once running, you'll have extra brains (or entire research teams) **working alongside you 24/7** on the same problems you care about: [github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
+
 ---
 ## Motivation
 
