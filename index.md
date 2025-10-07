@@ -10,7 +10,7 @@
   </a>
 </p>
 
-# freephdlabor: customizing your own multiagent system to do scientific research in your field 24/7 in hours
+# `freephdlabor`: customizing your own interactive, research lab to do scientific research in your field 24/7 in hours
 
 **TLDR:** An "one-size-fits-all" agentic system for all scientific domains/use cases is unfortunately not yet possible. However, freephdlabor is a *modular* multiagent system that continually automates all stages of standard AI research (idea conception to latex-formatted papers with figure showing figures and citations). The *modular* design, support features, and empirical guidelines together allow you to **build, test, and ship your multiagent system *tailored to your own domain/use case* within hours**.
 
@@ -95,16 +95,6 @@ For instance, users can use these **Claude Code slash commands**:
 
 At the moment, suggested improvements center around system prompts, but in the future, with better context engineering and coding assistants, we plan to support more general improvements involving code changes.
 
-### Real-time User Interruption - Human-in-the-Loop Direction
-
-Another key feature is the **interruption mechanism**, allowing you to provide critical guidance if needed-you can intervene at any time while still letting agents operate autonomously most of the time.
-
-**How it works**: The system listens continuously in the background for user input signals, independent of the agent's workflow. After each step completes (via callback functions from the smolagents framework), the mechanism checks for recorded signals. If an interrupt is present, the agent **pauses execution** and prompts you for new instructions—either to refine the current task or initiate a new one. These instructions are stored in the agent's memory and incorporated into subsequent steps.
-
-This creates a **collaborative loop** where agents remain self-directed most of the time, yet always receptive to human guidance when needed. The balance between autonomy and responsiveness makes the system more interactive, adaptable, and trustworthy.
-
-**Continuation from Checkpoints**: Beyond real-time interruption, freephdlabor can continue from any completed workspace. This allows iterative refinement where you can review results, provide feedback, and resume the research program with your new insights incorporated.
-
 ## Challenge 2: Context Engineering
 
 LLMs are pure functions—without tuning hyperparameters like temperature, their outputs depend entirely on what's in the context window. Effective long-term autonomous operation requires managing both context length and ensuring that the right information is available at the right time.
@@ -119,25 +109,27 @@ This means the agent's context includes not just the current task, but the compl
 
 For complete implementation details, check the [HuggingFace smolagents documentation](https://huggingface.co/docs/smolagents)[^8].
 
-### Context Compaction - Thinking Long-Term
+### Context Compaction and Persistence
 
-OK, now that we have lessened the burden on context window a little bit, it's still not enough to make freephdlabor work **24/7**.
+Context compaction handles growing conversations *within* a single session. When tokens exceed **75% of the model's limit**, the `AutomaticContextCompactor` kicks in: it intelligently summarizes the context—tool usage patterns, key observations, recent reasoning, errors encountered—and reconstructs the agent's memory with this compact summary **plus the last 3 ActionSteps**.
 
-So we added a feature 'inspired' by Claude Code to automatically compact the context: when tokens exceed **75% of the model's limit**, the `AutomaticContextCompactor` kicks in: it intelligently summarizes the context—tool usage patterns, key observations, recent reasoning, errors encountered—and reconstructs the agent's memory with this compact summary **plus the last 3 ActionSteps**.
+But what about **preserving progress across sessions** and enabling **human-in-the-loop direction**? The system automatically saves the complete memory of all agents—every execution step with detailed reasoning traces, tool usage history, and inter-agent interactions. When combined with workspace files, this creates a **comprehensive record of the entire research trajectory**.
 
-### Memory Persistence - Pick Up Where You Left Off
+**Resuming from checkpoints** is simple: specify the workspace you wish to continue from, and the system reconstructs the entire multiagent environment from the saved state, allowing agents to continue exactly where they left off.
 
-Context compaction handles growing conversations *within* a single session. But what about **preserving progress across sessions**?
+**Real-time interruption** enables interactive context injection when needed. The system listens continuously for user input signals, independent of the agent's workflow. After each step completes, the mechanism checks for recorded signals. If an interrupt is present, the agent pauses execution and prompts you for new instructions—either to refine the current task or inject critical context the agent may have missed. These instructions are stored in the agent's memory and incorporated into subsequent steps.
 
-The system automatically saves the complete memory of all agents—every execution step with detailed reasoning traces, tool usage history, and inter-agent interactions. When combined with workspace files, this creates a **comprehensive record of the entire research trajectory**.
-
-Resuming is simple: just specify the workspace you wish to continue from (with memory files in place). The system reconstructs the entire multiagent environment from the saved state, allowing agents to **continue exactly where they left off**.
+This creates a **collaborative loop** where agents remain self-directed most of the time, yet always receptive to human guidance when needed—combining automated context management with manual intervention when you have domain expertise the agent lacks.
 
 ### Workspace as External Memory
 
 The workspace folder also addresses context limitations by serving as **external memory that doesn't consume tokens**. Important information—experiment results, intermediate analyses, literature reviews—lives in files rather than taking up precious context space. Agents can reference these files when needed, dramatically extending their effective memory capacity beyond the token limit when workspace in organized appropriately.
 
 With context compaction, memory persistence, and workspace-based external memory working together, you finally have free PhD labor that works 24/7 on topics of your interest—running experiments, generating reports, and most importantly, **building on previous lessons learned**.
+
+<img src="figures/example_run_mermaid.svg" alt="Example Research Run" width="100%">
+
+*Example research run showing how ManagerAgent delegates tasks and manages context across specialized agents*
 
 ## Future Directions
 
