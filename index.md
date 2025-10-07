@@ -1,10 +1,14 @@
-<div align="center">
-
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/ltjed/freephdlabor)
-[![Stars](https://img.shields.io/github/stars/ltjed/freephdlabor?style=for-the-badge)](https://github.com/ltjed/freephdlabor)
-[![Paper](https://img.shields.io/badge/Paper-Technical_Report-blue?style=for-the-badge&logo=arxiv)](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf)
-
-</div>
+<p align="center">
+  <a href="https://github.com/ltjed/freephdlabor">
+    <img src="https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github" alt="GitHub Repository">
+  </a>
+  <a href="https://github.com/ltjed/freephdlabor">
+    <img src="https://img.shields.io/github/stars/ltjed/freephdlabor?style=for-the-badge" alt="GitHub Stars">
+  </a>
+  <a href="https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf">
+    <img src="https://img.shields.io/badge/Paper-Technical_Report-blue?style=for-the-badge&logo=arxiv" alt="Technical Report">
+  </a>
+</p>
 
 # freephdlabor: customizing your own multiagent system to do scientific research in your field 24/7 in hours
 

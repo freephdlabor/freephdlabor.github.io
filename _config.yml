@@ -1,0 +1,19 @@
+title: freephdlabor
+description: Customizing your own multiagent system to do scientific research in your field 24/7 in hours
+theme: jekyll-theme-minimal
+
+# Markdown processing
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  auto_ids: true
+  syntax_highlighter: rouge
+
+# Exclude from processing
+exclude:
+  - _deprecated/
+  - .claude/
+  - videos/
+  - .gitignore
+  - README.md

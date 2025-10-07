@@ -1,0 +1,30 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* Hide auto-generated header anchor links */
+h1 a.anchor,
+h2 a.anchor,
+h3 a.anchor,
+h1 .anchor-link,
+h2 .anchor-link,
+h3 .anchor-link,
+.markdown-body h1 a,
+.markdown-body h2 a,
+.markdown-body h3 a {
+  display: none !important;
+}
+
+/* Remove hover effects on headers that create links */
+h1:hover::before,
+h2:hover::before,
+h3:hover::before {
+  content: none !important;
+}
+
+/* Ensure badges render properly */
+img[src*="shields.io"] {
+  display: inline-block;
+  max-width: none;
+}
