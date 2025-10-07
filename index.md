@@ -13,9 +13,7 @@ You can have your random eureka moment tested and receives a report the next mor
   Your browser does not support the video tag.
 </video>
 
-Disclaimer: the rest of the blog covers the various design choices and intuitions we gathered from building it. Feel free to skip to [https://github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor) to start playing around with it or start building.
-
-alternatively: this could be a great weekend project to have an extra brain (or extra brains) to work alongside you on the same problems + link
+Alternatively: a great weekend project would be to **customize our system for yourself**—once running, you'll have extra brains (or entire research teams) **working alongside you 24/7** on the same problems you care about: [github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
 ---
 ## Motivation
 
@@ -33,15 +31,15 @@ In this blog, we will dive into how `freephdlabor` tackles these two challenges,
 
 ## Challenge 1: Modularity
 
-Over the past year, systems like `AI Scientist`[^3], `AI Scientist-v2`[^4], `Agent Laboratory`[^5], and `Zochi`[^6] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^10], which allocate resources to different tasks/agents a priori, but it's never open source). While fixed workflows reduce variability and make systems less prone to errors, they prevent customization: a pipeline designed for ML experiments can't easily adapt to your specific research area without significant re-engineering.
+Over the past year, systems like `AI Scientist`[^1], `AI Scientist-v2`[^2], `Agent Laboratory`[^3], and `Zochi`[^4] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^5], which allocate resources to different tasks/agents a priori, but it's never open source). While fixed workflows reduce variability and make systems less prone to errors, they prevent customization: a pipeline designed for ML experiments can't easily adapt to your specific research area without significant re-engineering.
 
 Building a customizable multiagent system requires clean interfaces and modular design. `freephdlabor` addresses this through four key mechanisms:
 
-### System Architecture Overview
+### An Example Architecture
 
 <img src="figures/architecture.png" alt="freephdlabor Architecture" width="800">
 
-*Figure 1: **Multi-Agent System Architecture**. The ManagerAgent serves as the central coordinator, delegating tasks to specialized agents (IdeationAgent, ExperimentationAgent, WriteupAgent, ReviewerAgent) and managing communication through a shared workspace.*
+<!-- *Figure 1: **Multi-Agent System Architecture**. The ManagerAgent serves as the central coordinator, delegating tasks to specialized agents (IdeationAgent, ExperimentationAgent, WriteupAgent, ReviewerAgent) and managing communication through a shared workspace.* -->
 
 ### ManagerAgent - PI of a Research Lab
 
@@ -51,13 +49,13 @@ For this reason, in our example system we designate a **ManagerAgent** to handle
 
 <img src="figures/decision.png" alt="Dynamic Decision Making" width="600">
 
-*Figure 3: **Dynamic Agent Decision-Making in freephdlabor**. When encountering a limitation in the current research context, the system's ManagerAgent autonomously reasons about the appropriate response and decides whether to delegate to specialized agents, interact with the workspace, or call other tools. This dynamic decision-making enables adaptive research workflows that respond to real-time progress.*
+<!-- *Figure 3: **Dynamic Agent Decision-Making in freephdlabor**. When encountering a limitation in the current research context, the system's ManagerAgent autonomously reasons about the appropriate response and decides whether to delegate to specialized agents, interact with the workspace, or call other tools. This dynamic decision-making enables adaptive research workflows that respond to real-time progress.* -->
 
 Thus, delegating to an agent is as simple as calling a tool with instructions as a parameter. The delegated agent will start a run of its own, call a variable number of tools to achieve the goal specified in its system prompt plus instructions from ManagerAgent, and call the `final_answer` tool when ready to report back to ManagerAgent, with the report passed as an argument to the `final_answer` tool.
 
 This *hub-and-spoke* design also makes the design more *modular*: the central ManagerAgent functions as an intelligent 'adapter' that requires user to readjust any agent twice (i.e., it can receives enough info from ManagerAgent to perform its job AND reports results to the same agent effectively) rather than having to repeat so for all other agents. This vastly decreases the amount of trial-and-error to, say, integrate a new agent into freephdlabor.
 
-### Workspace - Clean File-Based Interfaces
+### Workspace - File-Based Communication Channel/External Memory
 
 Allowing agents to communicate through a single `string` at a time is problematic for many reasons, the biggest of which is that it introduces the **"game of telephone"** effect, where an agent needs to transcribe information one or more times before another agent can access it.
 
@@ -65,9 +63,9 @@ Allowing agents to communicate through a single `string` at a time is problemati
 
 A much better alternative is to **write important information as files** inside a shared workspace folder, communicating only the file path (or even better, with a brief summary of its content) to another agent. As an added bonus, these files can serve as references to return to as needed in the future. It is paramount to give files descriptive names—lengthy names are perfectly acceptable if they enhance clarity.
 
-### Auto Prompt Optimization
+### Auto Agent Optimization
 
-Another goal of freephdlabor is to enable everyone to easily customize their own multi-agent system for bespoke use cases. Customization typically involves:
+Another goal of freephdlabor is to enable everyone to easily customize their own multiagent system for bespoke use cases. Customization typically involves:
 
 1. **Defining agent(s)**:
    - (a) Writing a system prompt
@@ -77,17 +75,17 @@ Another goal of freephdlabor is to enable everyone to easily customize their own
    - (a) Agent receives necessary information from other agents
    - (b) Agent faithfully and effectively communicates its work
 
-For (1), the usual good practices for building agents apply. To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in `agent_llm_calls.jsonl`. As recent research indicates[^7][^8], systematically analyzing `agent_llm_calls.jsonl` (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^8] to identify points for improvement.
+We want to allow users to zoom in on (1), especially (1)(b). To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in `agent_llm_calls.jsonl`. As recent research indicates[^6][^7], systematically analyzing `agent_llm_calls.jsonl` (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^7] to identify points for improvement.
 
-We have added two **Claude Code slash commands**:
-- `/analyze_agent_context` - Helps ensure agents receive necessary information
+For instance, users can use these **Claude Code slash commands**:
+- `/analyze_agent_context` - Helps ensure agents receive necessary information 
 - `/refine_agent_prompt` - Helps improve agent communication effectiveness
 
 At the moment, suggested improvements center around system prompts, but in the future, with better context engineering and coding assistants, we plan to support more general improvements involving code changes.
 
-### Real-time User Interruption - Human-in-the-Loop Customization
+### Real-time User Interruption - Human-in-the-Loop Direction
 
-A key feature that sets freephdlabor apart is its **interruption mechanism**. Think of it as a "tap on the shoulder" for your AI research team—you can intervene at any time while still letting agents operate autonomously most of the time.
+Another key feature is the **interruption mechanism**, allowing you to provide critical guidance if needed-you can intervene at any time while still letting agents operate autonomously most of the time.
 
 **How it works**: The system listens continuously in the background for user input signals, independent of the agent's workflow. After each step completes (via callback functions from the smolagents framework), the mechanism checks for recorded signals. If an interrupt is present, the agent **pauses execution** and prompts you for new instructions—either to refine the current task or initiate a new one. These instructions are stored in the agent's memory and incorporated into subsequent steps.
 
@@ -107,7 +105,7 @@ When an agent in freephdlabor runs, it reviews all past memories (the full conve
 
 This means the agent's context includes not just the current task, but the complete history of reasoning, actions, and observations from previous steps. The framework handles memory persistence, step replay, and secure code execution environments automatically. While this memory-based approach enables sophisticated multi-step reasoning, it also means context windows can grow large over time—which is why we implement multiple context management strategies.
 
-For complete implementation details, check the [HuggingFace smolagents documentation](https://huggingface.co/docs/smolagents)[^2].
+For complete implementation details, check the [HuggingFace smolagents documentation](https://huggingface.co/docs/smolagents)[^8].
 
 ### Context Compaction - Thinking Long-Term
 
@@ -125,19 +123,13 @@ Resuming is simple: just specify the workspace you wish to continue from (with m
 
 ### Workspace as External Memory
 
-The workspace folder also addresses context limitations by serving as **external memory that doesn't consume tokens**. Important information—experiment results, intermediate analyses, literature reviews—lives in files rather than taking up precious context space. Agents can reference these files when needed, dramatically extending their effective memory capacity beyond the token limit.
+The workspace folder also addresses context limitations by serving as **external memory that doesn't consume tokens**. Important information—experiment results, intermediate analyses, literature reviews—lives in files rather than taking up precious context space. Agents can reference these files when needed, dramatically extending their effective memory capacity beyond the token limit when workspace in organized appropriately.
 
 With context compaction, memory persistence, and workspace-based external memory working together, you finally have free PhD labor that works 24/7 on topics of your interest—running experiments, generating reports, and most importantly, **building on previous lessons learned**.
 
 ## Future Directions
 
-### Known Failure Modes
-
-**Agent Deception**: Agents sometimes engage in deceptive behavior when faced with difficult requirements they cannot satisfy. For example, when asked to generate a paper with specific length requirements, agents may create "placeholder" content consisting mostly of gibberish rather than admitting inability to meet requirements.
-
-*Future work*: Implementing more graceful failure modes or a dedicated deception-detection agent.
-
-### Future Research Directions
+**Agent Deception**: Agents sometimes engage in deceptive behavior when faced with difficult requirements they cannot satisfy. For example, when asked to generate a paper with specific length requirements, agents may create "placeholder" content consisting mostly of gibberish rather than admitting inability to meet requirements. Moreover, as seen in the demo video run for ResourcePreparationAgent in the first run, sometimes agents may just make a mistake and don't realize it. Regardless, improving reliability via dedicated agents, prompting, or post-training are all viable options.
 
 **Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the `RunExperimentTool` (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like **ToolUniverse**[^9] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
 
@@ -173,24 +165,24 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 ---
 ## bibtex?
 
+---
+
 ## References
 
-[^1]: Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., & Cao, Y. (2022). *ReAct: Synergizing Reasoning and Acting in Language Models*. arXiv preprint arXiv:2210.03629. [https://arxiv.org/abs/2210.03629](https://arxiv.org/abs/2210.03629)
+[^1]: Lu, C., et al. (2024). *AI Scientist: Fully Automated Scientific Discovery*. arXiv preprint. [https://github.com/SakanaAI/AI-Scientist](https://github.com/SakanaAI/AI-Scientist)
 
-[^2]: HuggingFace. (2024). *smolagents Documentation*. [https://huggingface.co/docs/smolagents](https://huggingface.co/docs/smolagents)
+[^2]: Yamada, Y., Lange, R. T., Lu, C., Hu, S., Lu, C., Foerster, J., Clune, J., & Ha, D. (2025). *The AI Scientist-v2: Workshop-Level Automated Scientific Discovery via Agentic Tree Search*. arXiv preprint arXiv:2504.08066. [https://arxiv.org/abs/2504.08066](https://arxiv.org/abs/2504.08066)
 
-[^3]: Lu, C., et al. (2024). *AI Scientist: Fully Automated Scientific Discovery*. arXiv preprint. [https://github.com/SakanaAI/AI-Scientist](https://github.com/SakanaAI/AI-Scientist)
+[^3]: Schmidgall, S., Su, Y., Wang, Z., Sun, X., Wu, J., Yu, X., Liu, J., Moor, M., Liu, Z., & Barsoum, E. (2025). *Agent Laboratory: Using LLM Agents as Research Assistants*. arXiv preprint arXiv:2501.04227. [https://arxiv.org/abs/2501.04227](https://arxiv.org/abs/2501.04227)
 
-[^4]: Yamada, Y., Lange, R. T., Lu, C., Hu, S., Lu, C., Foerster, J., Clune, J., & Ha, D. (2025). *The AI Scientist-v2: Workshop-Level Automated Scientific Discovery via Agentic Tree Search*. arXiv preprint arXiv:2504.08066. [https://arxiv.org/abs/2504.08066](https://arxiv.org/abs/2504.08066)
+[^4]: Zhou, Y., et al. (2025). *Zochi: Technical Report on Automated Scientific Research*.
 
-[^5]: Schmidgall, S., Su, Y., Wang, Z., Sun, X., Wu, J., Yu, X., Liu, J., Moor, M., Liu, Z., & Barsoum, E. (2025). *Agent Laboratory: Using LLM Agents as Research Assistants*. arXiv preprint arXiv:2501.04227. [https://arxiv.org/abs/2501.04227](https://arxiv.org/abs/2501.04227)
+[^5]: Gottweis, J., Weng, W.-H., Daryin, A., Tu, T., Palepu, A., Sirkovic, P., et al. (2025). *Towards an AI co-scientist*. arXiv preprint arXiv:2502.18864. [https://arxiv.org/abs/2502.18864](https://arxiv.org/abs/2502.18864)
 
-[^6]: Zhou, Y., et al. (2025). *Zochi: Technical Report on Automated Scientific Research*.
+[^6]: Agrawal, P., et al. (2025). *GEPA: Reflective Prompt Evolution for Agent Improvement*.
 
-[^7]: Agrawal, P., et al. (2025). *GEPA: Reflective Prompt Evolution for Agent Improvement*.
+[^7]: Zhang, Y., et al. (2025). *AgentTracer: Inducing Failure in LLM Agents for Better Understanding*.
 
-[^8]: Zhang, Y., et al. (2025). *AgentTracer: Inducing Failure in LLM Agents for Better Understanding*.
+[^8]: HuggingFace. (2024). *smolagents Documentation*. [https://huggingface.co/docs/smolagents](https://huggingface.co/docs/smolagents)
 
 [^9]: Gao, J., et al. (2025). *Democratizing AI Scientists Using Tool Universe*.
-
-[^10]: Gottweis, J., Weng, W.-H., Daryin, A., Tu, T., Palepu, A., Sirkovic, P., et al. (2025). *Towards an AI co-scientist*. arXiv preprint arXiv:2502.18864. [https://arxiv.org/abs/2502.18864](https://arxiv.org/abs/2502.18864)
