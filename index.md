@@ -19,33 +19,23 @@ alternatively: this could be a great weekend project to have an extra brain (or 
 ---
 ## Motivation
 
-OpenAI just dropped GPT Pulse that works while you sleep to prepare personalized briefings; 
-a core strength of Claude 4.5 Sonnet is to be able to work over longer horizons;
-The general trend seems to be moving towards 
+The most exciting goal in AI today is arguably to **accelerate scientific progress** (perhaps aside from direct self-improvement). A good first step towards such acceleration would be agentic systems that work 24/7 on your research problems—testing hypotheses while you sleep, exploring dead-ends so you don't have to, and delivering publication-grade reports that you can provide feedback on, much like directing your own research lab full of cheap PhD labor.
 
-"continue to scale better"
-The most exciting goal for AI systems today is arguably to **autonomously perform scientific research** (perhaps aside from direct self-improvement). 
-Over the past year, there have been numerous attempts at automating science through "agentic systems," such as `AI Scientist`[^3], `AI Scientist-v2`[^4], `Agent Laboratory`[^5], and `Zochi`[^6]. However, these systems have been restricted to **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics. 
+Despite recent work has shown exciting promise, such a dream assistant remains out of reach. No existing system can flexibly adapt to any scientific subdomain while autonomously managing its context for sustained, long-term research programs.
 
-This is fundamentally different from how humans conduct research. A PhD candidate (a type of agent) can decide at any given time between:
-1. Searching for papers related to their working ideas **vs.** reflecting on existing ideas hoping for eureka moments
-2. Asking their PI for help **vs.** working independently
+To get closer to this vision, we need to address two fundamental challenges:
 
-Ideally, these decisions should be informed by the **current progress of research**, which would improve both efficiency and quality of outputs. While current agents may not yet be sophisticated enough to make perfect autonomous decisions, we can bridge this gap through **context engineering**—injecting sufficient information about state and environment to enable adequate decision-making. As foundation models continue to improve, they will increasingly leverage this contextual intelligence for better autonomous research decisions.
+**Modularity.** A pipeline designed for ML experiments with a mandatory round of ablation studies can't be easily adapted to, say, materials science. To democratize AI research assistant systems to more people, we need **customizable, modular systems** where you can swap in domain-specific tools and agents without rebuilding from scratch.
 
-**Existing limitations**: Current multi-agent systems often work only on specific curated domains (e.g., certain paper types or research areas), making them difficult to adapt to individual use cases or new scientific subdomains.
+**Context Engineering.** Long-running autonomous research generates massive amounts of information—experiment results, literature notes, failed attempts, insights. As agents work over hours or days, they need the right information at the right time in their context window. Without proper context management, agents either suffer from context bloat or miss critical details.
 
-To fulfill this vision, freephdlabor is an multiagent system to automate the scientific process with the following core features:
-- **Fully Agentic/Dynamic Workflows**: All invocation of tools or agents should depends on LLM outputs.
-- **Customizable/Modular**: Each agents, or even tools now only form part of the overall system/environment, allowing easy customization tailored to individual needs.
-- **Robust Memory/Communication Mechanisms**: All agents have accessed to a structured workspace folder that can serve both as an external memory AND as an communication channel with much larger bandwidth.
-- **Continual/Human-in-the-loop**: freephdlabor can be interrupted, take inputs from the user, then resumes; it can also continue from finished runs, allowing sustained, continual investigation of an research topic in-depth.
-
-In this blog, we won't go into agent- or tool-level details, which can be found in the [full technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
+In this blog, we will dive into how `freephdlabor` tackles these two challenges, enabling you to build a customized AI research system for own research needs. We focus on key design principles and intuitions; for complete implementation and the full set of features, please refer to our [technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
 
 ## Challenge 1: Modularity
 
-Building a customizable multi-agent system requires clean interfaces and modular design. freephdlabor addresses this through four key mechanisms:
+Over the past year, systems like `AI Scientist`[^3], `AI Scientist-v2`[^4], `Agent Laboratory`[^5], and `Zochi`[^6] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^10], which allocate resources to different tasks/agents a priori, but it's never open source). While fixed workflows reduce variability and make systems less prone to errors, they prevent customization: a pipeline designed for ML experiments can't easily adapt to your specific research area without significant re-engineering.
+
+Building a customizable multiagent system requires clean interfaces and modular design. `freephdlabor` addresses this through four key mechanisms:
 
 ### System Architecture Overview
 
@@ -87,7 +77,7 @@ Another goal of freephdlabor is to enable everyone to easily customize their own
    - (a) Agent receives necessary information from other agents
    - (b) Agent faithfully and effectively communicates its work
 
-For (1), the usual good practices for building agents apply. To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in `agent_llm_calls.jsonl`. As recent research indicates[^8][^9], systematically analyzing `agent_llm_calls.jsonl` (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^9] to identify points for improvement.
+For (1), the usual good practices for building agents apply. To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in `agent_llm_calls.jsonl`. As recent research indicates[^7][^8], systematically analyzing `agent_llm_calls.jsonl` (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^8] to identify points for improvement.
 
 We have added two **Claude Code slash commands**:
 - `/analyze_agent_context` - Helps ensure agents receive necessary information
@@ -105,7 +95,7 @@ This creates a **collaborative loop** where agents remain self-directed most of 
 
 **Continuation from Checkpoints**: Beyond real-time interruption, freephdlabor can continue from any completed workspace. This allows iterative refinement where you can review results, provide feedback, and resume the research program with your new insights incorporated.
 
-## Challenge 2: Context Engineering and Organization
+## Challenge 2: Context Engineering
 
 LLMs are pure functions—without tuning hyperparameters like temperature, their outputs depend entirely on what's in the context window. Effective long-term autonomous operation requires managing both context length and ensuring that the right information is available at the right time.
 
@@ -149,7 +139,7 @@ With context compaction, memory persistence, and workspace-based external memory
 
 ### Future Research Directions
 
-**Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the `RunExperimentTool` (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like **ToolUniverse**[^10] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
+**Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the `RunExperimentTool` (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like **ToolUniverse**[^9] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
 
 **Context Engineering Benefits**: A commonly stated advantage of multi-agent systems is specialization via system prompts. Through building freephdlabor, we've discovered that **delegation of certain tasks to other agents can significantly reduce the burden on individual context windows**, enabling more sophisticated reasoning chains. As context engineering capabilities improve, this architectural benefit becomes increasingly valuable.
 
@@ -181,6 +171,7 @@ Ready to build your own AI research assistant? Check out:
 We welcome contributions, feedback, and discussions. Join us in democratizing AI-powered scientific discovery!
 
 ---
+## bibtex?
 
 ## References
 
@@ -196,10 +187,10 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 
 [^6]: Zhou, Y., et al. (2025). *Zochi: Technical Report on Automated Scientific Research*.
 
-[^7]: Gottweis, J., Weng, W.-H., Daryin, A., Tu, T., Palepu, A., Sirkovic, P., et al. (2025). *Towards an AI co-scientist*. arXiv preprint arXiv:2502.18864. [https://arxiv.org/abs/2502.18864](https://arxiv.org/abs/2502.18864)
+[^7]: Agrawal, P., et al. (2025). *GEPA: Reflective Prompt Evolution for Agent Improvement*.
 
-[^8]: Agrawal, P., et al. (2025). *GEPA: Reflective Prompt Evolution for Agent Improvement*.
+[^8]: Zhang, Y., et al. (2025). *AgentTracer: Inducing Failure in LLM Agents for Better Understanding*.
 
-[^9]: Zhang, Y., et al. (2025). *AgentTracer: Inducing Failure in LLM Agents for Better Understanding*.
+[^9]: Gao, J., et al. (2025). *Democratizing AI Scientists Using Tool Universe*.
 
-[^10]: Gao, J., et al. (2025). *Democratizing AI Scientists Using Tool Universe*.
+[^10]: Gottweis, J., Weng, W.-H., Daryin, A., Tu, T., Palepu, A., Sirkovic, P., et al. (2025). *Towards an AI co-scientist*. arXiv preprint arXiv:2502.18864. [https://arxiv.org/abs/2502.18864](https://arxiv.org/abs/2502.18864)
