@@ -28,7 +28,7 @@ You can have your random eureka moment tested and receives a report the next mor
 A great weekend project would be to **customize our system for yourself**—once running, you'll have extra brains (or entire research teams) **working alongside you 24/7** on the same problems you care about: [github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
 
 ---
-## Building useful scientific slop-generating machines
+## Generating useful scientific slop
 
 The most exciting goal in AI today is arguably to **accelerate scientific progress** (perhaps aside from direct self-improvement). A good first step towards such acceleration would be agentic systems that work 24/7 on your research problems—testing hypotheses while you sleep, exploring dead-ends so you don't have to, and delivering publication-grade reports that you can provide feedback on, much like directing your own research lab full of cheap PhD labor.
 
@@ -68,14 +68,6 @@ Thus, delegating to an agent is as simple as calling a tool with instructions as
 
 This *hub-and-spoke* design also makes the design more *modular*: the central ManagerAgent functions as an intelligent 'adapter' that requires user to readjust any agent twice (i.e., it can receives enough info from ManagerAgent to perform its job AND reports results to the same agent effectively) rather than having to repeat so for all other agents. This vastly decreases the amount of trial-and-error to, say, integrate a new agent into freephdlabor.
 
-### Workspace - File-Based Communication Channel/External Memory
-
-Allowing agents to communicate through a single `string` at a time is problematic for many reasons, the biggest of which is that it introduces the **"game of telephone"** effect, where an agent needs to transcribe information one or more times before another agent can access it.
-
-<img src="figures/game_of_telephone.png" alt="Game of Telephone Problem" width="650">
-
-A much better alternative is to **write important information as files** inside a shared workspace folder, communicating only the file path (or even better, with a brief summary of its content) to another agent. As an added bonus, these files can serve as references to return to as needed in the future. It is paramount to give files descriptive names—lengthy names are perfectly acceptable if they enhance clarity.
-
 ### Auto Agent Optimization
 
 Another goal of freephdlabor is to enable everyone to easily customize their own multiagent system for bespoke use cases. Customization typically involves:
@@ -96,31 +88,41 @@ E.g., users can use these **Claude Code slash commands**:
 
 At the moment, suggested improvements center around system prompts, but in the future, with better context engineering and coding assistants, we plan to support more general improvements involving code changes.
 
+### Workspace - File-Based Communication Channel/External Memory
+
+Allowing agents to communicate through a single `string` at a time is problematic for many reasons, the biggest of which is that it introduces the **"game of telephone"** effect, where an agent needs to transcribe information one or more times before another agent can access it.
+
+<img src="figures/game_of_telephone.png" alt="Game of Telephone Problem" width="650">
+
+A much better alternative is to **write important information as files** inside a shared workspace folder, communicating only the file path (or even better, with a brief summary of its content) to another agent. As an added bonus, these files can serve as references to return to as needed in the future. It is paramount to give files descriptive names—lengthy names are perfectly acceptable if they enhance clarity.
+
 ## Challenge 2: Context Engineering
 
 LLMs are pure functions—without tuning hyperparameters like temperature, their outputs depend entirely on what's in the context window. Effective long-term autonomous operation requires managing both context length and ensuring that the right information is available at the right time.
 
-### Agent Memory Cycle
+### Agent Memory
 
 When an agent in freephdlabor runs, it reviews all past memories (the full conversation context), generates an action (like calling a tool or writing code), observes the results, and saves this entire cycle as another step in memory for future reference.
 
 <img src="figures/memory.png" alt="Agent Memory Cycle" width="700">
 
-*Agents maintain a growing memory of reasoning, actions, and observations from each step[^8]*
+*Agents maintain a growing memory of reasoning, actions, and observations from each step*
 
 This means the agent's context includes not just the current task, but the complete history of reasoning, actions, and observations from previous steps. The framework handles memory persistence, step replay, and secure code execution environments automatically[^8]. While this memory-based approach enables sophisticated multi-step reasoning, it also means context windows can grow large over time—which is why we implement multiple context management strategies.
 
-### Context Compaction and Persistence
+### Context Compaction
 
 Context compaction handles growing conversations *within* a single session. When tokens exceed **75% of the model's limit**, the `AutomaticContextCompactor` kicks in: it intelligently summarizes the context—tool usage patterns, key observations, recent reasoning, errors encountered—and reconstructs the agent's memory with this compact summary **plus the last 3 ActionSteps**.
 
-But what about **preserving progress across sessions** and enabling **human-in-the-loop direction**? The system automatically saves the complete memory of all agents—every execution step with detailed reasoning traces, tool usage history, and inter-agent interactions. When combined with workspace files, this creates a **comprehensive record of the entire research trajectory**.
+### Towards continual collaboration
 
-**Resuming from checkpoints** is simple: specify the workspace you wish to continue from, and the system reconstructs the entire multiagent environment from the saved state, allowing agents to continue exactly where they left off.
+An important goal of `freephdlabor` is to enable **continual research** of the same topic while allowing plenty of interaction between you and your own 'research lab.'
 
-**Real-time interruption** enables interactive context injection when needed. The system listens continuously for user input signals, independent of the agent's workflow. After each step completes, the mechanism checks for recorded signals. If an interrupt is present, the agent pauses execution and prompts you for new instructions—either to refine the current task or inject critical context the agent may have missed. These instructions are stored in the agent's memory and incorporated into subsequent steps.
+To this end, the system automatically saves the complete memory of all agents—every execution step with detailed reasoning traces, tool usage history, and inter-agent interactions. When combined with workspace files, this creates a comprehensive record of the entire research trajectory. **Resuming from checkpoints** is simple: specify the workspace you wish to continue from, and the system reconstructs the entire multiagent environment from the saved state.
 
-This creates a **collaborative loop** where agents remain self-directed most of the time, yet always receptive to human guidance when needed—combining automated context management with manual intervention when you have domain expertise the agent lacks.
+**Real-time interruption** enables interactive context injection when needed. The system listens continuously for user input signals. After each step completes, if an interrupt is present, the agent pauses and prompts you for new instructions—either to refine the current task or inject critical context the agent may have missed. These instructions are stored in agent memory and incorporated into subsequent steps.
+
+This creates a **collaborative loop** where agents remain self-directed most of the time, yet always receptive to human guidance when needed.
 
 ### Workspace as External Memory
 
@@ -142,11 +144,11 @@ With context compaction, memory persistence, and workspace-based external memory
 
 **In-Context Learning for Improvement**: Currently, the most straightforward way for agents in freephdlabor to "learn" between different runs is through in-context learning—incorporating information into system prompts or as files in the workspace upon initialization. While effective, this approach has drawbacks: the information takes up precious context window space and can distract agents when tasks are unrelated to saved information.
 
-**Specialization via Fine-Tuning**: We believe an underappreciated advantage of the multi-agent approach is **specialization via fine-tuning**. The major bottleneck in traditional fine-tuning lies in the amount of data/capability we can post-train into each LLM without interfering with other capabilities.
+**Specialization via Fine-Tuning**: We believe an underappreciated advantage of the multiagent approach is **specialization via fine-tuning**. The major bottleneck in traditional fine-tuning lies in the amount of data/capability we can post-train into each LLM without interfering with other capabilities.
 
 Since `agent_llm_calls.jsonl` contains the LLM calls (i.e., state-action pairs) of different agents across runs, it would be fascinating to **fine-tune individual agents using curated versions of those trajectories**. This approach could enable deep domain-specific expertise while maintaining general capabilities—each agent becomes a specialist through targeted fine-tuning on its own behavioral data.
 
-### Main Trade-off: Stability & How to Ameliorate That
+### Flexibility v. Stability
 
 The primary trade-off in designing freephdlabor is between **flexibility** and **stability**. Fully agentic workflows enable adaptive research processes but can sometimes lead to unpredictable behavior. We address this through:
 
@@ -159,16 +161,15 @@ As foundation models continue to improve, we expect the stability-flexibility tr
 
 ---
 
-## Get Started
+## Taking stock...
 
-Ready to build your own AI research assistant? Check out:
+*AI-accelerated innovation shouldn't belong only to Google*. `freephdlabor` is a step toward this vision: a multiagent framework where **modularity enables customization** and **context engineering enables persistence**, further *closing the gap between compute hours and scientific innovation*.
+
+Ready to build your own AI research team? Check out:
 - **GitHub Repository**: [https://github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
 - **Full Technical Report**: [PDF](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf)
 
 We welcome contributions, feedback, and discussions. Join us in democratizing AI-powered scientific discovery!
-
----
-## bibtex?
 
 ---
 
