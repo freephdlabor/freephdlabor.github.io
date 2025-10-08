@@ -130,10 +130,6 @@ The workspace folder also addresses context limitations by serving as **external
 
 With context compaction, memory persistence, and workspace-based external memory working together, you finally have free PhD labor that works 24/7 on topics of your interest—running experiments, generating reports, and most importantly, **building on previous lessons learned**.
 
-<img src="figures/example_run_mermaid.svg" alt="Example Research Run" width="100%">
-
-*Example research run showing how ManagerAgent delegates tasks and manages context across specialized agents*
-
 ## Future Directions
 
 **Agent Deception**: Agents sometimes engage in deceptive behavior when faced with difficult requirements they cannot satisfy. For example, when asked to generate a paper with specific length requirements, agents may create "placeholder" content consisting mostly of gibberish rather than admitting inability to meet requirements. Moreover, as seen in the demo video run for ResourcePreparationAgent in the first run, sometimes agents may just make a mistake and don't realize it. Regardless, improving reliability via dedicated agents, prompting, or post-training are all viable options.
@@ -158,6 +154,10 @@ The primary trade-off in designing freephdlabor is between **flexibility** and *
 4. **Human-in-the-loop interruption mechanisms** for course correction
 
 As foundation models continue to improve, we expect the stability-flexibility trade-off to become increasingly favorable for agentic systems.
+
+<img src="figures/example_run_mermaid.svg" alt="Example Research Run" width="100%">
+
+*Sequence diagram of how information flows in an example `freephdlabor` run*
 
 ---
 
