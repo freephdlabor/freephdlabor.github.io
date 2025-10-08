@@ -157,7 +157,7 @@ As foundation models continue to improve, we expect the stability-flexibility tr
 
 <img src="figures/example_run_mermaid.svg" alt="Example Research Run" width="100%">
 
-*Sequence diagram of how information flows in an example `freephdlabor` run*
+*Sequence diagram demonstrating how information flows in an example `freephdlabor` run*
 
 ---
 
