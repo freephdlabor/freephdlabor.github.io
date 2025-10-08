@@ -44,7 +44,7 @@ In this blog, we will dive into how `freephdlabor` tackles these two challenges,
 
 ## Challenge 1: Modularity
 
-Over the past year, systems like `AI Scientist`[^1], `AI Scientist-v2`[^2], `Agent Laboratory`[^3], and `Zochi`[^4] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^5], which allocate resources to different tasks/agents a priori, but it's never open source). While fixed workflows reduce variability and make systems less prone to errors, they prevent customization: a pipeline designed for ML experiments can't easily adapt to your specific research area without significant re-engineering.
+Over the past year, systems like `AI Scientist`[^1], `AI Scientist-v2`[^2], `Agent Laboratory`[^3], and `Zochi`[^4] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^5], which allocate resources to different tasks/agents a priori, but it was never made open-source). While fixed workflows reduce variability and make systems less prone to errors, they prevent customization: a pipeline designed for ML experiments can't easily adapt to your specific research area without significant re-engineering.
 
 Building a customizable multiagent system requires clean interfaces and modular design. `freephdlabor` addresses this through four key mechanisms:
 
