@@ -12,9 +12,9 @@
   </a>
 </p>
 
-**TLDR:** An "one-size-fits-all" agentic system for all scientific domains/use cases is unfortunately not yet possible. However, freephdlabor is a *modular* multiagent system that continually automates all stages of standard AI research (idea conception to latex-formatted papers with figure showing figures and citations). The *modular* design, support features, and empirical guidelines together allow you to **build, test, and ship your multiagent system *tailored to your own domain/use case* within hours**.
+**TLDR:** An "one-size-fits-all" agentic system for all scientific domains/use cases is unfortunately not yet possible. However, `freephdlabor` is the ***first fully customizable*** open-source multiagent framework with *dynamic workflow* to continually automate *all* stages of research (idea conception to latex-formatted papers with figures and citations). The modular design, support features, and empirical guidelines together allow you to **build, test, and ship your multiagent system tailored to your own domain/use case within hours**.
 
-You can have your random eureka moment tested and receives a report the next morning:
+You can customize your own `freephdlabor`, allowing you to give it half-baked research hypotheses (e.g., *"can we predict neural network training phases?"*) in the evening and wake up to a full paper with **real** experiments and citations:
 
 <embed src="papers/example_paper.pdf" type="application/pdf" width="100%" height="600px" />
 
