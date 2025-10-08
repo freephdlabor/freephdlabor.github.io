@@ -20,10 +20,7 @@ You can customize your own `freephdlabor`, allowing you to give it half-baked re
 
 **We can also see it in action:**
 
-<video width="720" height="480" controls>
-  <source src="videos/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+<iframe width="100%" height="600" src="https://www.youtube.com/embed/xwG7dpUtues" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 A great weekend project would be to **customize our system for yourself**—once running, you'll have extra brains (or entire research teams) **working alongside you 24/7** on the same problems you care about: [github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
 
