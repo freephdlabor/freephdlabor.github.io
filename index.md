@@ -27,7 +27,7 @@ A great weekend project would be to **customize our system for yourself**—once
 ---
 ## Generating useful scientific slop
 
-The most exciting goal in AI today is arguably to **accelerate scientific progress** (perhaps aside from direct self-improvement). A good first step towards such acceleration would be agentic systems that work 24/7 on your research problems—testing hypotheses while you sleep, exploring dead-ends so you don't have to, and delivering publication-grade reports that you can provide feedback on, much like directing your own research lab full of cheap PhD labor.
+The most exciting goal in AI today is arguably to **accelerate scientific progress**, which holds the key to recursive self-improvement. A good first step towards such acceleration would be agentic systems that work 24/7 on your research problems—testing hypotheses while you sleep, exploring dead-ends so you don't have to, and delivering publication-grade reports that you can provide feedback on, much like directing your own research lab full of PhD students.
 
 Despite recent work has shown exciting promise, such a dream assistant remains out of reach. No existing system can flexibly adapt to any scientific subdomain while autonomously managing its context for sustained, long-term research programs.
 
@@ -36,7 +36,7 @@ In this blog, we will dive into how `freephdlabor` tackles the fundamental chall
 ---
 ## The Four Core Challenges
 
-Over the past year, systems like `AI Scientist`[^1], `AI Scientist-v2`[^2], `Agent Laboratory`[^3], and `Zochi`[^4] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^5], which allocate resources to different tasks/agents a priori, but it was never made open-source).
+Over the past year, systems like `AI Scientist`[^1], `AI Scientist-v2`[^2], `Agent Laboratory`[^3], `Zochi`[^4], and `Robin`[^5] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^6], which allocate resources to different tasks/agents a priori, but it was never made open-source).
 
 To get closer to the vision of truly adaptive AI research assistants, we need to address fundamental challenges:
 
@@ -94,7 +94,7 @@ When an agent in freephdlabor runs, it reviews all past memories (the full conve
 
 *Agents maintain a growing memory of reasoning, actions, and observations from each step*
 
-This means the agent's context includes not just the current task, but the complete history of reasoning, actions, and observations from previous steps. The framework handles memory persistence, step replay, and secure code execution environments automatically[^8]. While this memory-based approach enables sophisticated multi-step reasoning, it also means context windows can grow large over time—which is why we implement multiple context management strategies.
+This means the agent's context includes not just the current task, but the complete history of reasoning, actions, and observations from previous steps. The framework handles memory persistence, step replay, and secure code execution environments automatically[^9]. While this memory-based approach enables sophisticated multi-step reasoning, it also means context windows can grow large over time—which is why we implement multiple context management strategies.
 
 ### Context Compaction
 
@@ -151,7 +151,7 @@ Another goal of freephdlabor is to enable everyone to easily customize their own
    - (a) Agent receives necessary information from other agents
    - (b) Agent faithfully and effectively communicates its work
 
-We want to allow users to zoom in on (1), especially (1)(b). To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in `agent_llm_calls.jsonl`. As recent research indicates[^6][^7], systematically analyzing `agent_llm_calls.jsonl` (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^7] to identify points for improvement.
+We want to allow users to zoom in on (1), especially (1)(b). To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in `agent_llm_calls.jsonl`. As recent research indicates[^7][^8], systematically analyzing `agent_llm_calls.jsonl` (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^8] to identify points for improvement.
 
 E.g., users can use these **Claude Code slash commands**:
 - `/analyze_agent_context` - Helps ensure agents receive necessary information 
@@ -190,7 +190,7 @@ The primary trade-off in designing freephdlabor is between **flexibility** and *
 
 **Advanced Context Engineering**: As foundation models develop better context management capabilities, we expect multiagent architectures to become even more powerful. Future context engineering advances could enable more sophisticated delegation patterns, smarter memory allocation across agents, and dynamic context sharing strategies that further amplify the benefits of specialized agent coordination.
 
-**Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the `RunExperimentTool` (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like `ToolUniverse`[^9] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
+**Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the `RunExperimentTool` (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like `ToolUniverse`[^10] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
 
 **In-Context Learning for Improvement**: While effective, the current in-context learning approach has drawbacks: the information takes up precious context window space and can distract agents when tasks are unrelated to saved information. Future improvements could address these limitations through more sophisticated context management.
 
@@ -225,12 +225,14 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 
 [^4]: Zhou, Y., et al. (2025). *Zochi: Technical Report on Automated Scientific Research*. [https://github.com/IntologyAI/Zochi/blob/main/Zochi_Technical_Report.pdf](https://github.com/IntologyAI/Zochi/blob/main/Zochi_Technical_Report.pdf)
 
-[^5]: Gottweis, J., Weng, W.-H., Daryin, A., Tu, T., Palepu, A., Sirkovic, P., et al. (2025). *Towards an AI co-scientist*. arXiv preprint arXiv:2502.18864. [https://arxiv.org/abs/2502.18864](https://arxiv.org/abs/2502.18864)
+[^5]: Lu, Y., Wang, C., Song, L., & Li, H. (2025). *Robin: A Multi-Agent System for Automating Scientific Discovery*. arXiv preprint arXiv:2505.13400. [https://arxiv.org/abs/2505.13400](https://arxiv.org/abs/2505.13400)
 
-[^6]: Agrawal, P., et al. (2025). *GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning*. arXiv preprint arXiv:2507.19457. [https://arxiv.org/abs/2507.19457](https://arxiv.org/abs/2507.19457)
+[^6]: Gottweis, J., Weng, W.-H., Daryin, A., Tu, T., Palepu, A., Sirkovic, P., et al. (2025). *Towards an AI co-scientist*. arXiv preprint arXiv:2502.18864. [https://arxiv.org/abs/2502.18864](https://arxiv.org/abs/2502.18864)
 
-[^7]: Zhang, Y., et al. (2025). *AgenTracer: Who Is Inducing Failure in the LLM Agentic Systems?* arXiv preprint arXiv:2509.03312. [https://arxiv.org/abs/2509.03312](https://arxiv.org/abs/2509.03312)
+[^7]: Agrawal, P., et al. (2025). *GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning*. arXiv preprint arXiv:2507.19457. [https://arxiv.org/abs/2507.19457](https://arxiv.org/abs/2507.19457)
 
-[^8]: HuggingFace. (2024). *smolagents Documentation*. [https://huggingface.co/docs/smolagents](https://huggingface.co/docs/smolagents)
+[^8]: Zhang, Y., et al. (2025). *AgenTracer: Who Is Inducing Failure in the LLM Agentic Systems?* arXiv preprint arXiv:2509.03312. [https://arxiv.org/abs/2509.03312](https://arxiv.org/abs/2509.03312)
 
-[^9]: Gao, J., et al. (2025). *Democratizing AI scientists using ToolUniverse*. arXiv preprint arXiv:2509.23426. [https://arxiv.org/abs/2509.23426](https://arxiv.org/abs/2509.23426)
+[^9]: HuggingFace. (2024). *smolagents Documentation*. [https://huggingface.co/docs/smolagents](https://huggingface.co/docs/smolagents)
+
+[^10]: Gao, J., et al. (2025). *Democratizing AI scientists using ToolUniverse*. arXiv preprint arXiv:2509.23426. [https://arxiv.org/abs/2509.23426](https://arxiv.org/abs/2509.23426)
