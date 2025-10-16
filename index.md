@@ -1,3 +1,44 @@
+<style>
+body {
+  font-size: 22px !important;
+  line-height: 1.9 !important;
+}
+
+h1 {
+  font-size: 3.2em !important;
+  line-height: 1.3 !important;
+}
+
+h2 {
+  font-size: 2.6em !important;
+  margin-top: 2.5em !important;
+  line-height: 1.4 !important;
+}
+
+h3 {
+  font-size: 2em !important;
+  line-height: 1.5 !important;
+}
+
+p, li {
+  font-size: 22px !important;
+  line-height: 1.9 !important;
+}
+
+blockquote p {
+  font-size: 22px !important;
+}
+
+/* Also increase code font size */
+code {
+  font-size: 20px !important;
+}
+
+pre code {
+  font-size: 18px !important;
+}
+</style>
+
 # `freephdlabor`: customizing your own research lab to do scientific research in your field 24/7
 
 <p align="center">
@@ -139,7 +180,7 @@ This isn't hardcoded behavior—it's more like giving agents the benefit of expe
 
 To address the **Human Intervention & Continual Research** challenge, we built mechanisms for both real-time human guidance and learning across research sessions.
 
-### Auto Agent Optimization
+### Auto-Improving Your Agents Over Time
 
 Another goal of freephdlabor is to enable everyone to easily customize their own multiagent system for bespoke use cases. Customization typically involves:
 
