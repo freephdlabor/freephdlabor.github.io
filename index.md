@@ -57,6 +57,8 @@ code:not([class]) {
   color: inherit !important;
   padding: 0 !important;
   border: none !important;
+  font-weight: bold !important;
+  font-size: 1em !important; /* Ensure same size as surrounding text */
 }
 </style>
 
