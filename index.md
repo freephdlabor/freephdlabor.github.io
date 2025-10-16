@@ -50,6 +50,14 @@ h2 code {
 h3 code {
   font-size: 0.9em !important;
 }
+
+/* Style for <code> tags - just monospace font, no background or color change */
+code:not([class]) {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border: none !important;
+}
 </style>
 
 # `freephdlabor`: customizing your own research lab to do scientific research in your field 24/7
@@ -98,7 +106,7 @@ To get closer to the vision of truly adaptive AI research assistants, we need to
 
 - **Context Window Limitations**: LLMs are pure functions—without tuning hyperparameters like temperature, their outputs depend entirely on what's in the context window. Long-running autonomous research generates massive amounts of information—experiment results, literature notes, failed attempts, insights. As agents work over hours or days, they need the right information at the right time in their context window. Without proper context management, agents either suffer from context bloat or miss critical details.
 
-- **Multiagent Coordination**: From an individual agent's perspective, it needs to keep track of **(a)** the entire research history (ideas attempted, experiment results, etc.) accumulated thus far, and **(b)** complete description of the environment, which includes the description of every other agent. The total context this information requires grows **quadratically** with the number of agents. Additionally, allowing agents to communicate through a single `string` at a time introduces the **"game of telephone"** effect, where an agent needs to transcribe information one or more times before another agent can access it.
+- **Multiagent Coordination**: From an individual agent's perspective, it needs to keep track of **(a)** the entire research history (ideas attempted, experiment results, etc.) accumulated thus far, and **(b)** complete description of the environment, which includes the description of every other agent. The total context this information requires grows **quadratically** with the number of agents. Additionally, allowing agents to communicate through a single <code>string</code> at a time introduces the **"game of telephone"** effect, where an agent needs to transcribe information one or more times before another agent can access it.
 
 - **Human Intervention & Continual Research**: A commonly stated advantage of multi-agent systems is specialization via system prompts. However, effective long-term autonomous operation requires both human guidance at critical junctures and mechanisms to learn from past runs without polluting future contexts.
 
@@ -123,7 +131,7 @@ For this reason, in our example system we designate a **ManagerAgent** to handle
 
 <!-- *Figure 3: **Dynamic Agent Decision-Making in freephdlabor**. When encountering a limitation in the current research context, the system's ManagerAgent autonomously reasons about the appropriate response and decides whether to delegate to specialized agents, interact with the workspace, or call other tools. This dynamic decision-making enables adaptive research workflows that respond to real-time progress.* -->
 
-Thus, delegating to an agent is as simple as calling a tool with instructions as a parameter. The delegated agent will start a run of its own, call a variable number of tools to achieve the goal specified in its system prompt plus instructions from ManagerAgent, and call the `final_answer` tool when ready to report back to ManagerAgent, with the report passed as an argument to the `final_answer` tool.
+Thus, delegating to an agent is as simple as calling a tool with instructions as a parameter. The delegated agent will start a run of its own, call a variable number of tools to achieve the goal specified in its system prompt plus instructions from ManagerAgent, and call the <code>final_answer</code> tool when ready to report back to ManagerAgent, with the report passed as an argument to the `final_answer` tool.
 
 This *hub-and-spoke* design also makes the design more *modular*: the central ManagerAgent functions as an intelligent 'adapter' that requires user to readjust any agent twice (i.e., it can receives enough info from ManagerAgent to perform its job AND reports results to the same agent effectively) rather than having to repeat so for all other agents. This vastly decreases the amount of trial-and-error to, say, integrate a new agent into freephdlabor.
 
@@ -152,7 +160,7 @@ This means the agent's context includes not just the current task, but the compl
 
 ### Context Compaction
 
-Context compaction handles growing conversations *within* a single session. When tokens exceed **75% of the model's limit**, the `AutomaticContextCompactor` kicks in: it intelligently summarizes the context—tool usage patterns, key observations, recent reasoning, errors encountered—and reconstructs the agent's memory with this compact summary **plus the last 3 ActionSteps**.
+Context compaction handles growing conversations *within* a single session. When tokens exceed **75% of the model's limit**, the <code>AutomaticContextCompactor</code> kicks in: it intelligently summarizes the context—tool usage patterns, key observations, recent reasoning, errors encountered—and reconstructs the agent's memory with this compact summary **plus the last 3 ActionSteps**.
 
 ### Workspace as External Memory
 
@@ -205,11 +213,11 @@ Another goal of freephdlabor is to enable everyone to easily customize their own
    - (a) Agent receives necessary information from other agents
    - (b) Agent faithfully and effectively communicates its work
 
-We want to allow users to zoom in on (1), especially (1)(b). To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in `agent_llm_calls.jsonl`. As recent research indicates[^7][^8], systematically analyzing `agent_llm_calls.jsonl` (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^8] to identify points for improvement.
+We want to allow users to zoom in on (1), especially (1)(b). To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in <code>agent_llm_calls.jsonl</code>. As recent research indicates[^7][^8], systematically analyzing <code>agent_llm_calls.jsonl</code> (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^8] to identify points for improvement.
 
 E.g., users can use these **Claude Code slash commands**:
-- `/analyze_agent_context` - Helps ensure agents receive necessary information 
-- `/refine_agent_prompt` - Helps improve agent communication effectiveness
+- <code>/analyze_agent_context</code> - Helps ensure agents receive necessary information 
+- <code>/refine_agent_prompt</code> - Helps improve agent communication effectiveness
 
 At the moment, suggested improvements center around system prompts, but in the future, with better context engineering and coding assistants, we plan to support more general improvements involving code changes.
 
@@ -244,13 +252,13 @@ The primary trade-off in designing freephdlabor is between **flexibility** and *
 
 **Advanced Context Engineering**: As foundation models develop better context management capabilities, we expect multiagent architectures to become even more powerful. Future context engineering advances could enable more sophisticated delegation patterns, smarter memory allocation across agents, and dynamic context sharing strategies that further amplify the benefits of specialized agent coordination.
 
-**Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the `RunExperimentTool` (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like `ToolUniverse`[^10] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
+**Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the <code>RunExperimentTool</code> (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like `ToolUniverse`[^10] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
 
 **In-Context Learning for Improvement**: While effective, the current in-context learning approach has drawbacks: the information takes up precious context window space and can distract agents when tasks are unrelated to saved information. Future improvements could address these limitations through more sophisticated context management.
 
 **Specialization via Fine-Tuning**: We believe an underappreciated advantage of the multiagent approach is **specialization via fine-tuning**. The major bottleneck in traditional fine-tuning lies in the amount of data/capability we can post-train into each LLM without interfering with other capabilities.
 
-Since `agent_llm_calls.jsonl` contains the LLM calls (i.e., state-action pairs) of different agents across runs, it would be fascinating to **fine-tune individual agents using curated versions of those trajectories**. This approach could enable deep domain-specific expertise while maintaining general capabilities—each agent becomes a specialist through targeted fine-tuning on its own behavioral data.
+Since <code>agent_llm_calls.jsonl</code> contains the LLM calls (i.e., state-action pairs) of different agents across runs, it would be fascinating to **fine-tune individual agents using curated versions of those trajectories**. This approach could enable deep domain-specific expertise while maintaining general capabilities—each agent becomes a specialist through targeted fine-tuning on its own behavioral data.
 
 **Agent Deception**: Agents sometimes engage in deceptive behavior when faced with difficult requirements they cannot satisfy. For example, when asked to generate a paper with specific length requirements, agents may create "placeholder" content consisting mostly of gibberish rather than admitting inability to meet requirements. Moreover, as seen in the demo video run for ResourcePreparationAgent in the first run, sometimes agents may just make a mistake and don't realize it. Regardless, improving reliability via dedicated agents, prompting, or post-training are all viable options.
 
