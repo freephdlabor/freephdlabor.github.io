@@ -25,30 +25,33 @@ You can customize your own `freephdlabor`, allowing you to give it half-baked re
 A great weekend project would be to **customize our system for yourself**—once running, you'll have extra brains (or entire research teams) **working alongside you 24/7** on the same problems you care about: [github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
 
 ---
-## The Four Core Challenges
+## Generating useful scientific slop
 
 The most exciting goal in AI today is arguably to **accelerate scientific progress** (perhaps aside from direct self-improvement). A good first step towards such acceleration would be agentic systems that work 24/7 on your research problems—testing hypotheses while you sleep, exploring dead-ends so you don't have to, and delivering publication-grade reports that you can provide feedback on, much like directing your own research lab full of cheap PhD labor.
 
-Despite recent work has shown exciting promise, such a dream assistant remains out of reach. No existing system can flexibly adapt to any scientific subdomain while autonomously managing its context for sustained, long-term research programs. Over the past year, systems like `AI Scientist`[^1], `AI Scientist-v2`[^2], `Agent Laboratory`[^3], and `Zochi`[^4] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^5], which allocate resources to different tasks/agents a priori, but it was never made open-source).
+Despite recent work has shown exciting promise, such a dream assistant remains out of reach. No existing system can flexibly adapt to any scientific subdomain while autonomously managing its context for sustained, long-term research programs.
 
-To get closer to this vision, we need to address fundamental challenges:
+In this blog, we will dive into how `freephdlabor` tackles the fundamental challenges preventing this vision, enabling you to build a customized AI research system for own research needs. We focus on key design principles and intuitions; for complete implementation and the full set of features, please refer to our [technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
+
+---
+## The Four Core Challenges
+
+Over the past year, systems like `AI Scientist`[^1], `AI Scientist-v2`[^2], `Agent Laboratory`[^3], and `Zochi`[^4] have demonstrated automated research in specific domains. However, these systems employ **fixed workflows**—operating like assembly lines that impose the same sequence of steps on all research topics (one exception is Google's `AI co-scientist`[^5], which allocate resources to different tasks/agents a priori, but it was never made open-source).
+
+To get closer to the vision of truly adaptive AI research assistants, we need to address fundamental challenges:
 
 - **Workflow Flexibility**: While fixed workflows reduce variability and make systems less prone to errors, they prevent customization: a pipeline designed for ML experiments can't easily adapt to your specific research area without significant re-engineering.
 
 - **Context Window Limitations**: LLMs are pure functions—without tuning hyperparameters like temperature, their outputs depend entirely on what's in the context window. Long-running autonomous research generates massive amounts of information—experiment results, literature notes, failed attempts, insights. As agents work over hours or days, they need the right information at the right time in their context window. Without proper context management, agents either suffer from context bloat or miss critical details.
 
-- **Multiagent Coordination**: From an individual agent's perspective, it needs to keep track of **(a)** the entire research history (ideas attempted, experiment results, etc.) accumulated thus far, and **(b)** complete description of the environment, which includes the description of every other agent. The total context this information requires grows **quadratically** with the number of agents. Additionally, allowing agents to communicate through a single `string` at a time introduces the **"game of telephone"** effect, where an agent needs to transcribe information one or more times before another agent can access it. Through building freephdlabor, we've discovered that **delegation of certain tasks to other agents can significantly reduce the burden on individual context windows**, enabling more sophisticated reasoning chains.
+- **Multiagent Coordination**: From an individual agent's perspective, it needs to keep track of **(a)** the entire research history (ideas attempted, experiment results, etc.) accumulated thus far, and **(b)** complete description of the environment, which includes the description of every other agent. The total context this information requires grows **quadratically** with the number of agents. Additionally, allowing agents to communicate through a single `string` at a time introduces the **"game of telephone"** effect, where an agent needs to transcribe information one or more times before another agent can access it.
 
-- **Human Intervention & Continual Learning**: A commonly stated advantage of multi-agent systems is specialization via system prompts. However, effective long-term autonomous operation requires both human guidance at critical junctures and mechanisms to learn from past runs without polluting future contexts.
-
-In this blog, we will dive into how `freephdlabor` tackles these challenges, enabling you to build a customized AI research system for own research needs. We focus on key design principles and intuitions; for complete implementation and the full set of features, please refer to our [technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
-
-<img src="figures/game_of_telephone.png" alt="Game of Telephone Problem" width="650">
+- **Human Intervention & Continual Research**: A commonly stated advantage of multi-agent systems is specialization via system prompts. However, effective long-term autonomous operation requires both human guidance at critical junctures and mechanisms to learn from past runs without polluting future contexts.
 
 ---
-## Solution 1: Runtime-Determined Autonomous Workflows
+## Dynamic Workflows
 
-Building a customizable multiagent system requires clean interfaces and modular design. `freephdlabor` addresses this through these key mechanisms:
+To tackle the **Workflow Flexibility** challenge where fixed pipelines prevent customization, `freephdlabor` implements fully dynamic workflows that adapt to research progress. Building a customizable multiagent system requires clean interfaces and modular design, which we address through these key mechanisms:
 
 ### An Example Architecture
 
@@ -70,18 +73,18 @@ Thus, delegating to an agent is as simple as calling a tool with instructions as
 
 This *hub-and-spoke* design also makes the design more *modular*: the central ManagerAgent functions as an intelligent 'adapter' that requires user to readjust any agent twice (i.e., it can receives enough info from ManagerAgent to perform its job AND reports results to the same agent effectively) rather than having to repeat so for all other agents. This vastly decreases the amount of trial-and-error to, say, integrate a new agent into freephdlabor.
 
-<img src="figures/example_run_mermaid.svg" alt="Example Research Run" width="100%">
-
-*Sequence diagram demonstrating how information flows in an example `freephdlabor` run*
-
 ---
-## Solution 2: Context Management & Communication
+## Context Management
 
-Effective long-term autonomous operation requires managing both context length and ensuring that the right information is available at the right time.
+To overcome both **Context Window Limitations** and the **Multiagent Coordination** challenges—including the quadratic scaling problem and "game of telephone" effect—we implement comprehensive context management strategies. Effective long-term autonomous operation requires managing both context length and ensuring that the right information is available at the right time.
 
 ### Workspace - File-Based Communication Channel/External Memory
 
 A much better alternative is to **write important information as files** inside a shared workspace folder, communicating only the file path (or even better, with a brief summary of its content) to another agent. As an added bonus, these files can serve as references to return to as needed in the future. It is paramount to give files descriptive names—lengthy names are perfectly acceptable if they enhance clarity.
+
+<img src="figures/game_of_telephone.png" alt="Game of Telephone Problem" width="650">
+
+*The "game of telephone" effect when agents communicate through strings - avoided by using file-based communication*
 
 ### Agent Memory
 
@@ -104,9 +107,9 @@ The workspace folder also addresses context limitations by serving as **external
 With context compaction, memory persistence, and workspace-based external memory working together, you finally have free PhD labor that works 24/7 on topics of your interest—running experiments, generating reports, and most importantly, **building on previous lessons learned**.
 
 ---
-## Solution 3: Specialized Agent Design
+## Modular Agent Specialization
 
-Each specialized agent concentrates on designated work with specific tool sets and fewer choices, reducing distraction and improving focus.
+To address both **Context Window Limitations** and **Multiagent Coordination** challenges, we employ modular agent specialization. By distributing work across specialized agents, we avoid the quadratic context scaling problem while ensuring each agent has precisely the information it needs. Each specialized agent concentrates on designated work with specific tool sets and fewer choices, reducing distraction and improving focus.
 
 **Tool Specialization**: Each agent in the system has access to a curated set of tools relevant to its specific role. For instance:
 - The IdeationAgent focuses on literature search and hypothesis generation tools
@@ -118,8 +121,23 @@ Each specialized agent concentrates on designated work with specific tool sets a
 
 **Context Window Benefits**: Through building freephdlabor, we've discovered that **delegation of certain tasks to other agents can significantly reduce the burden on individual context windows**, enabling more sophisticated reasoning chains. This specialization approach not only improves individual agent performance but also makes the system more maintainable and debuggable—when something goes wrong, it's clear which agent and which subset of tools are involved.
 
+**Encoded Research Wisdom**: Beyond managing context size, specialization allows us to embed domain expertise directly into each agent's context through carefully crafted system prompts. Unlike rigid workflows, these prompts provide flexible guidance—accumulated wisdom that agents consider but can override when the situation demands:
+
+- The IdeationAgent carries experience about what makes strong research contributions: genuine literature gaps, theoretical grounding, testable hypotheses—but remains open to unconventional ideas that break these patterns
+- The ExperimentationAgent draws on best practices like ablation studies and baseline comparisons, yet adapts its approach based on what each unique research question requires
+- The WriteupAgent understands effective paper narratives while remaining flexible to present results in whatever structure best serves the findings
+- The ReviewerAgent considers multiple evaluation dimensions (originality, soundness, clarity, significance) but weighs them dynamically based on the paper's goals
+
+This isn't hardcoded behavior—it's more like giving agents the benefit of experience. When you customize for your domain, you're sharing field-specific wisdom that guides without constraining. A biology agent might know "controls typically isolate variables" but recognize when a systems approach demands different methodology. This flexible expertise is what enables agents to handle novel research directions while still making informed decisions.
+
+<img src="figures/example_run_mermaid.svg" alt="Example Research Run" width="100%">
+
+*Sequence diagram demonstrating how specialized agents interact in an example `freephdlabor` run*
+
 ---
-## Solution 4: Human-in-the-Loop & Continual Research
+## Collaborative Evolution
+
+To address the **Human Intervention & Continual Research** challenge, we built mechanisms for both real-time human guidance and learning across research sessions.
 
 ### Auto Agent Optimization
 
@@ -170,7 +188,7 @@ The primary trade-off in designing freephdlabor is between **flexibility** and *
 ---
 ## Future Directions
 
-**Context Engineering Benefits**: As context engineering capabilities improve, the architectural benefit of multi-agent systems becomes increasingly valuable. Through building freephdlabor, we've discovered that **delegation of certain tasks to other agents can significantly reduce the burden on individual context windows**, enabling more sophisticated reasoning chains. As context engineering capabilities improve, this architectural benefit becomes increasingly valuable.
+**Advanced Context Engineering**: As foundation models develop better context management capabilities, we expect multiagent architectures to become even more powerful. Future context engineering advances could enable more sophisticated delegation patterns, smarter memory allocation across agents, and dynamic context sharing strategies that further amplify the benefits of specialized agent coordination.
 
 **Adapting to Your Domain**: The most direct extension of freephdlabor is modifying existing agents for your specific use case. For instance, if you're a materials scientist, you could substitute the `RunExperimentTool` (designed for AI/ML experiments) with a tool that takes in a hypothesis and outputs lab experiment results. Resources like `ToolUniverse`[^9] provide curated collections of validated tools that can be seamlessly integrated into agent definitions for domain-specific customization.
 
