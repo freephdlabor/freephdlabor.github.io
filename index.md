@@ -37,6 +37,19 @@ code {
 pre code {
   font-size: 18px !important;
 }
+
+/* Ensure code in headings inherits heading size */
+h1 code {
+  font-size: 0.9em !important;
+}
+
+h2 code {
+  font-size: 0.9em !important;
+}
+
+h3 code {
+  font-size: 0.9em !important;
+}
 </style>
 
 # `freephdlabor`: customizing your own research lab to do scientific research in your field 24/7
