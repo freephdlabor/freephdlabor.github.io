@@ -119,21 +119,21 @@ To tackle the **Workflow Flexibility** challenge where fixed pipelines prevent c
 
 <img src="figures/architecture.png" alt="freephdlabor Architecture" width="800">
 
-<!-- *Figure 1: **Multi-Agent System Architecture**. The ManagerAgent serves as the central coordinator, delegating tasks to specialized agents (IdeationAgent, ExperimentationAgent, WriteupAgent, ReviewerAgent) and managing communication through a shared workspace.* -->
+<!-- *Figure 1: **Multi-Agent System Architecture**. The <code>ManagerAgent</code> serves as the central coordinator, delegating tasks to specialized agents (<code>IdeationAgent</code>, <code>ExperimentationAgent</code>, <code>WriteupAgent</code>, <code>ReviewerAgent</code>) and managing communication through a shared workspace.* -->
 
 Note that arrows in the figure do not indicate workflows like figures in other work do, but rather options that are available for an agent to autonomously choose from.
 
-### ManagerAgent - PI of a Research Lab
+### <code>ManagerAgent</code> - PI of a Research Lab
 
-For this reason, in our example system we designate a **ManagerAgent** to handle the delegation. This is the only agent that keeps track of both (a) and (b) mentioned above. Mechanistically, delegation to other agents is integrated much like a tool: both tools and agents have a description detailing their purpose, capabilities, etc., which are included as part of the ManagerAgent's system prompt.
+For this reason, in our example system we designate a **<code>ManagerAgent</code>** to handle the delegation. This is the only agent that keeps track of both (a) and (b) mentioned above. Mechanistically, delegation to other agents is integrated much like a tool: both tools and agents have a description detailing their purpose, capabilities, etc., which are included as part of the <code>ManagerAgent</code>'s system prompt.
 
 <img src="figures/decision.png" alt="Dynamic Decision Making" width="600">
 
-<!-- *Figure 3: **Dynamic Agent Decision-Making in freephdlabor**. When encountering a limitation in the current research context, the system's ManagerAgent autonomously reasons about the appropriate response and decides whether to delegate to specialized agents, interact with the workspace, or call other tools. This dynamic decision-making enables adaptive research workflows that respond to real-time progress.* -->
+<!-- *Figure 3: **Dynamic Agent Decision-Making in freephdlabor**. When encountering a limitation in the current research context, the system's <code>ManagerAgent</code> autonomously reasons about the appropriate response and decides whether to delegate to specialized agents, interact with the workspace, or call other tools. This dynamic decision-making enables adaptive research workflows that respond to real-time progress.* -->
 
-Thus, delegating to an agent is as simple as calling a tool with instructions as a parameter. The delegated agent will start a run of its own, call a variable number of tools to achieve the goal specified in its system prompt plus instructions from ManagerAgent, and call the <code>final_answer</code> tool when ready to report back to ManagerAgent, with the report passed as an argument to the `final_answer` tool.
+Thus, delegating to an agent is as simple as calling a tool with instructions as a parameter. The delegated agent will start a run of its own, call a variable number of tools to achieve the goal specified in its system prompt plus instructions from <code>ManagerAgent</code>, and call the <code>final_answer</code> tool when ready to report back to <code>ManagerAgent</code>, with the report passed as an argument to the <code>final_answer</code> tool.
 
-This *hub-and-spoke* design also makes the design more *modular*: the central ManagerAgent functions as an intelligent 'adapter' that requires user to readjust any agent twice (i.e., it can receives enough info from ManagerAgent to perform its job AND reports results to the same agent effectively) rather than having to repeat so for all other agents. This vastly decreases the amount of trial-and-error to, say, integrate a new agent into freephdlabor.
+This *hub-and-spoke* design also makes the design more *modular*: the central <code>ManagerAgent</code> functions as an intelligent 'adapter' that requires user to readjust any agent twice (i.e., it can receives enough info from <code>ManagerAgent</code> to perform its job AND reports results to the same agent effectively) rather than having to repeat so for all other agents. This vastly decreases the amount of trial-and-error to, say, integrate a new agent into freephdlabor.
 
 ---
 ## Context Management
@@ -174,10 +174,10 @@ With context compaction, memory persistence, and workspace-based external memory
 To address both **Context Window Limitations** and **Multiagent Coordination** challenges, we employ modular agent specialization. By distributing work across specialized agents, we avoid the quadratic context scaling problem while ensuring each agent has precisely the information it needs. Each specialized agent concentrates on designated work with specific tool sets and fewer choices, reducing distraction and improving focus.
 
 **Tool Specialization**: Each agent in the system has access to a curated set of tools relevant to its specific role. For instance:
-- The IdeationAgent focuses on literature search and hypothesis generation tools
-- The ExperimentationAgent works with code execution and experiment management tools
-- The WriteupAgent specializes in LaTeX compilation and figure generation tools
-- The ReviewerAgent uses critical analysis and validation tools
+- The <code>IdeationAgent</code> focuses on literature search and hypothesis generation tools
+- The <code>ExperimentationAgent</code> works with code execution and experiment management tools
+- The <code>WriteupAgent</code> specializes in LaTeX compilation and figure generation tools
+- The <code>ReviewerAgent</code> uses critical analysis and validation tools
 
 **Reduced Distraction**: By limiting each agent to its domain-specific responsibilities and tools, we minimize cognitive overhead. An agent writing papers doesn't need to know about experiment execution details, and an agent running experiments doesn't need LaTeX formatting knowledge. This separation of concerns allows each agent to excel in its specialized domain without the noise of irrelevant capabilities.
 
@@ -185,10 +185,10 @@ To address both **Context Window Limitations** and **Multiagent Coordination** c
 
 **Encoded Research Wisdom**: Beyond managing context size, specialization allows us to embed domain expertise directly into each agent's context through carefully crafted system prompts. Unlike rigid workflows, these prompts provide flexible guidance—accumulated wisdom that agents consider but can override when the situation demands:
 
-- The IdeationAgent carries experience about what makes strong research contributions: genuine literature gaps, theoretical grounding, testable hypotheses—but remains open to unconventional ideas that break these patterns
-- The ExperimentationAgent draws on best practices like ablation studies and baseline comparisons, yet adapts its approach based on what each unique research question requires
-- The WriteupAgent understands effective paper narratives while remaining flexible to present results in whatever structure best serves the findings
-- The ReviewerAgent considers multiple evaluation dimensions (originality, soundness, clarity, significance) but weighs them dynamically based on the paper's goals
+- The <code>IdeationAgent</code> carries experience about what makes strong research contributions: genuine literature gaps, theoretical grounding, testable hypotheses—but remains open to unconventional ideas that break these patterns
+- The <code>ExperimentationAgent</code> draws on best practices like ablation studies and baseline comparisons, yet adapts its approach based on what each unique research question requires
+- The <code>WriteupAgent</code> understands effective paper narratives while remaining flexible to present results in whatever structure best serves the findings
+- The <code>ReviewerAgent</code> considers multiple evaluation dimensions (originality, soundness, clarity, significance) but weighs them dynamically based on the paper's goals
 
 This isn't hardcoded behavior—it's more like giving agents the benefit of experience. When you customize for your domain, you're sharing field-specific wisdom that guides without constraining. A biology agent might know "controls typically isolate variables" but recognize when a systems approach demands different methodology. This flexible expertise is what enables agents to handle novel research directions while still making informed decisions.
 
@@ -244,7 +244,7 @@ The primary trade-off in designing freephdlabor is between **flexibility** and *
 
 1. **Structured workspace conventions** that guide agent behavior
 2. **Context compaction** to prevent information overload
-3. **Explicit quality gates** in the ManagerAgent's delegation logic
+3. **Explicit quality gates** in the <code>ManagerAgent</code>'s delegation logic
 4. **Human-in-the-loop interruption mechanisms** for course correction
 
 ---
@@ -260,7 +260,7 @@ The primary trade-off in designing freephdlabor is between **flexibility** and *
 
 Since <code>agent_llm_calls.jsonl</code> contains the LLM calls (i.e., state-action pairs) of different agents across runs, it would be fascinating to **fine-tune individual agents using curated versions of those trajectories**. This approach could enable deep domain-specific expertise while maintaining general capabilities—each agent becomes a specialist through targeted fine-tuning on its own behavioral data.
 
-**Agent Deception**: Agents sometimes engage in deceptive behavior when faced with difficult requirements they cannot satisfy. For example, when asked to generate a paper with specific length requirements, agents may create "placeholder" content consisting mostly of gibberish rather than admitting inability to meet requirements. Moreover, as seen in the demo video run for ResourcePreparationAgent in the first run, sometimes agents may just make a mistake and don't realize it. Regardless, improving reliability via dedicated agents, prompting, or post-training are all viable options.
+**Agent Deception**: Agents sometimes engage in deceptive behavior when faced with difficult requirements they cannot satisfy. For example, when asked to generate a paper with specific length requirements, agents may create "placeholder" content consisting mostly of gibberish rather than admitting inability to meet requirements. Moreover, as seen in the demo video run for <code>ResourcePreparationAgent</code> in the first run, sometimes agents may just make a mistake and don't realize it. Regardless, improving reliability via dedicated agents, prompting, or post-training are all viable options.
 
 **Foundation Model Improvements**: As foundation models continue to improve, we expect the stability-flexibility trade-off to become increasingly favorable for agentic systems. At the moment, suggested improvements center around system prompts, but in the future, with better context engineering and coding assistants, we plan to support more general improvements involving code changes.
 
