@@ -121,9 +121,7 @@ To tackle the **Workflow Flexibility** challenge where fixed pipelines prevent c
 
 <img src="figures/architecture.png" alt="freephdlabor Architecture" width="800">
 
-<!-- *Figure 1: **Multi-Agent System Architecture**. The <code>ManagerAgent</code> serves as the central coordinator, delegating tasks to specialized agents (<code>IdeationAgent</code>, <code>ExperimentationAgent</code>, <code>WriteupAgent</code>, <code>ReviewerAgent</code>) and managing communication through a shared workspace.* -->
-
-Note that arrows in the figure do not indicate workflows like figures in other work do, but rather options that are available for an agent to autonomously choose from.
+*Multi-Agent System Architecture. The <code>ManagerAgent</code> serves as the central coordinator, delegating tasks to specialized agents (<code>IdeationAgent</code>, <code>ExperimentationAgent</code>, <code>WriteupAgent</code>, <code>ReviewerAgent</code>) and managing communication through a shared workspace. Note that arrows in the figure do not indicate workflows like figures in other work do, but rather options that are available for an agent to autonomously choose from.*
 
 ### <code>ManagerAgent</code> - PI of a Research Lab
 
@@ -131,7 +129,7 @@ For this reason, in our example system we designate a **<code>ManagerAgent</code
 
 <img src="figures/decision.png" alt="Dynamic Decision Making" width="600">
 
-<!-- *Figure 3: **Dynamic Agent Decision-Making in freephdlabor**. When encountering a limitation in the current research context, the system's <code>ManagerAgent</code> autonomously reasons about the appropriate response and decides whether to delegate to specialized agents, interact with the workspace, or call other tools. This dynamic decision-making enables adaptive research workflows that respond to real-time progress.* -->
+*Dynamic Agent Decision-Making in `freephdlabor`. When encountering a limitation in the current research context, the system's <code>ManagerAgent</code> autonomously reasons about the appropriate response and decides whether to delegate to specialized agents, interact with the workspace, or call other tools. This dynamic decision-making enables adaptive research workflows that respond to real-time progress.*
 
 Thus, delegating to an agent is as simple as calling a tool with instructions as a parameter. The delegated agent will start a run of its own, call a variable number of tools to achieve the goal specified in its system prompt plus instructions from <code>ManagerAgent</code>, and call the <code>final_answer</code> tool when ready to report back to <code>ManagerAgent</code>, with the report passed as an argument to the <code>final_answer</code> tool.
 
