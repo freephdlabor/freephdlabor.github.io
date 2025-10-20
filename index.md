@@ -304,7 +304,12 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 
 [^10]: Gao, J., et al. (2025). *Democratizing AI scientists using ToolUniverse*. arXiv preprint arXiv:2509.23426. [https://arxiv.org/abs/2509.23426](https://arxiv.org/abs/2509.23426)
 
+<br>
+<br>
+
 ---
+
+<br>
 
 ## Citation
 
