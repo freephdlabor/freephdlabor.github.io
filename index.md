@@ -80,8 +80,6 @@ code:not([class]) {
 
 <img src="figures/features.png" alt="freephdlabor Core Features" width="100%">
 
-*Core features of `freephdlabor`: Fully Agentic/Dynamic Workflows, Customizable/Modular architecture, Robust Memory/Communication Mechanisms, and Human-in-the-loop/Continual research capabilities*
-
 You can customize your own `freephdlabor`, allowing you to give it half-baked research hypotheses (e.g., *"can we predict neural network training phases?"*) in the evening and wake up to a full paper with **real** experiments and citations:
 
 <embed src="papers/example_paper.pdf" type="application/pdf" width="100%" height="600px" />
