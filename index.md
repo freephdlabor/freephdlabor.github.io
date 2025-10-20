@@ -212,13 +212,15 @@ To address the **Human Intervention & Continual Research** challenge, we built m
 
 ### Making Customization Easy
 
-Another goal of `freephdlabor` is to enable everyone to easily customize their own multiagent system for bespoke use cases. Traditionally, this requires extensive trial-and-error to get agents working well together—writing system prompts, defining tools, and ensuring agents communicate effectively.
+Another goal of `freephdlabor` is to enable everyone to easily customize their own multiagent system for bespoke use cases. This involves writing system prompts, defining tools, ensuring agents receive necessary information from other agents, and ensuring they communicate their work effectively. Traditionally, this requires extensive trial-and-error to get agents working well together.
 
 `freephdlabor` makes this process largely automatic. The system **automatically tracks all LLM calls** made by all agents, organized in temporal order, creating a comprehensive interaction log in <code>agent_llm_calls.jsonl</code>. This eliminates the guesswork: instead of manually debugging why agents aren't collaborating well, you can systematically analyze their actual interactions.
 
-To make this analysis effortless, we provide **custom Claude Code slash commands** (available in the repository's <code>.claude/commands/</code> directory):
+To address these integration challenges, we provide **custom Claude Code slash commands** (available in the repository's <code>.claude/commands/</code> directory):
 - <code>/analyze_agent_context</code> - Automatically identifies when agents lack necessary information from other agents
 - <code>/refine_agent_prompt</code> - Suggests specific improvements to enhance agent communication effectiveness
+
+Used together, these commands ensure agents receive necessary information and communicate effectively.
 
 As recent research indicates[^7][^8], systematically examining these LM call traces—especially across different runs—enables coding assistants and fine-tuned LLMs like AgentTracer-8B[^8] to identify key improvement opportunities. Users can focus on the creative work of defining agent roles and selecting appropriate tools, while the system provides intelligent guidance for integration challenges.
 
