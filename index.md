@@ -282,6 +282,20 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 
 ---
 
+## Citation
+
+If you find this work useful, please cite:
+
+```bibtex
+@article{li2025freephdlabor,
+  title={Build Your Personalized Research Group: A Multiagent Framework for Continual and Interactive Science Automation},
+  author={Li, Ed and Ren, Junyu and Pan, Xintian and Yan, Cat and Li, Chuanhao and Bergemann, Dirk and Yang, Zhuoran},
+  journal={arXiv preprint arXiv:2510.15624},
+  year={2025},
+  url={https://arxiv.org/abs/2510.15624}
+}
+```
+
 ## References
 
 [^1]: Lu, C., et al. (2024). *AI Scientist: Fully Automated Scientific Discovery*. arXiv preprint arXiv:2408.06292. [https://arxiv.org/abs/2408.06292](https://arxiv.org/abs/2408.06292)
@@ -303,24 +317,3 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 [^9]: HuggingFace. (2024). *smolagents Documentation*. [https://huggingface.co/docs/smolagents](https://huggingface.co/docs/smolagents)
 
 [^10]: Gao, J., et al. (2025). *Democratizing AI scientists using ToolUniverse*. arXiv preprint arXiv:2509.23426. [https://arxiv.org/abs/2509.23426](https://arxiv.org/abs/2509.23426)
-
-<br>
-<br>
-
----
-
-<br>
-
-## Citation
-
-If you find this work useful, please cite:
-
-```bibtex
-@article{li2025freephdlabor,
-  title={Build Your Personalized Research Group: A Multiagent Framework for Continual and Interactive Science Automation},
-  author={Li, Ed and Ren, Junyu and Pan, Xintian and Yan, Cat and Li, Chuanhao and Bergemann, Dirk and Yang, Zhuoran},
-  journal={arXiv preprint arXiv:2510.15624},
-  year={2025},
-  url={https://arxiv.org/abs/2510.15624}
-}
-```
