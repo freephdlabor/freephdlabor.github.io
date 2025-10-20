@@ -2,6 +2,9 @@
 body {
   font-size: 22px !important;
   line-height: 1.9 !important;
+  max-width: 900px !important;
+  margin: 0 auto !important;
+  padding: 20px !important;
 }
 
 h1 {
