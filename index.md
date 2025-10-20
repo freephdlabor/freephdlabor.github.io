@@ -127,15 +127,22 @@ To tackle the **Workflow Flexibility** challenge where fixed pipelines prevent c
 
 ### <code>ManagerAgent</code> - PI of a Research Lab
 
-For this reason, in our example system we designate a **<code>ManagerAgent</code>** to handle the delegation. This is the only agent that keeps track of both (a) and (b) mentioned above. Mechanistically, delegation to other agents is integrated much like a tool: both tools and agents have a description detailing their purpose, capabilities, etc., which are included as part of the <code>ManagerAgent</code>'s system prompt.
+For this reason, in our example system we designate a **<code>ManagerAgent</code>** to handle the delegation. This is the only agent that keeps track of both (a) the entire research history (ideas attempted, experimental results, etc.) in condensed form, and (b) complete descriptions of all other agents in the environment. Mechanistically, delegation to other agents is integrated much like a tool: both tools and agents have a description detailing their purpose, capabilities, etc., which are included as part of the <code>ManagerAgent</code>'s system prompt.
 
-<img src="figures/decision.png" alt="Dynamic Decision Making" width="600">
+<img src="figures/decision.png" alt="Dynamic Decision Making" width="800">
 
 <!-- *Figure 3: **Dynamic Agent Decision-Making in freephdlabor**. When encountering a limitation in the current research context, the system's <code>ManagerAgent</code> autonomously reasons about the appropriate response and decides whether to delegate to specialized agents, interact with the workspace, or call other tools. This dynamic decision-making enables adaptive research workflows that respond to real-time progress.* -->
 
 Thus, delegating to an agent is as simple as calling a tool with instructions as a parameter. The delegated agent will start a run of its own, call a variable number of tools to achieve the goal specified in its system prompt plus instructions from <code>ManagerAgent</code>, and call the <code>final_answer</code> tool when ready to report back to <code>ManagerAgent</code>, with the report passed as an argument to the <code>final_answer</code> tool.
 
-This *hub-and-spoke* design also makes the design more *modular*: the central <code>ManagerAgent</code> functions as an intelligent 'adapter' that requires user to readjust any agent twice (i.e., it can receives enough info from <code>ManagerAgent</code> to perform its job AND reports results to the same agent effectively) rather than having to repeat so for all other agents. This vastly decreases the amount of trial-and-error to, say, integrate a new agent into freephdlabor.
+This *hub-and-spoke* design enhances both *modularity* and *communication*: agents communicate through a systematic central channel (the <code>ManagerAgent</code>) rather than ad-hoc peer-to-peer connections, making information flow more effective. Moreover, new agents only need to interface with the <code>ManagerAgent</code> rather than being integrated with every existing agent, vastly reducing the complexity of adding new capabilities to the system.
+
+**Agent Specialization**: Each agent in our example system serves a distinct role in the research process, mirroring how humans organize research teams:
+- The <code>IdeationAgent</code> functions as the research idea specialist, generating novel hypotheses through systematic literature analysis and gap identification
+- The <code>ExperimentationAgent</code> serves as the experimental execution specialist, transforming research ideas into working code and producing concrete results with illustrations
+- The <code>ResourcePreparationAgent</code> acts as the data librarian, organizing experimental artifacts and preparing resources before paper writing begins  
+- The <code>WriteupAgent</code> operates as the academic writing specialist, transforming organized experimental results into publication-ready research papers
+- The <code>ReviewerAgent</code> provides structured peer review feedback, enabling the <code>ManagerAgent</code> to decide whether to terminate or iterate further with revisions
 
 ---
 ## Context Management
@@ -148,7 +155,7 @@ A much better alternative is to **write important information as files** inside 
 
 <img src="figures/game_of_telephone.png" alt="Game of Telephone Problem" width="650">
 
-*The "game of telephone" effect when agents communicate through strings - avoided by using file-based communication*
+*The "game of telephone" effect when agents communicate through strings - avoided by using file-based communication. What starts as "a cat catching a mouse" becomes "a girl unplugging the input device mouse" after multiple agent-to-agent transcriptions.*
 
 ### Agent Memory
 
@@ -203,25 +210,17 @@ This isn't hardcoded behavior—it's more like giving agents the benefit of expe
 
 To address the **Human Intervention & Continual Research** challenge, we built mechanisms for both real-time human guidance and learning across research sessions.
 
-### Auto-Improving Your Agents Over Time
+### Making Customization Easy
 
-Another goal of freephdlabor is to enable everyone to easily customize their own multiagent system for bespoke use cases. Customization typically involves:
+Another goal of `freephdlabor` is to enable everyone to easily customize their own multiagent system for bespoke use cases. Traditionally, this requires extensive trial-and-error to get agents working well together—writing system prompts, defining tools, and ensuring agents communicate effectively.
 
-1. **Defining agent(s)**:
-   - (a) Writing a system prompt
-   - (b) Defining the tools the agent has access to
+`freephdlabor` makes this process largely automatic. The system **automatically tracks all LLM calls** made by all agents, organized in temporal order, creating a comprehensive interaction log in <code>agent_llm_calls.jsonl</code>. This eliminates the guesswork: instead of manually debugging why agents aren't collaborating well, you can systematically analyze their actual interactions.
 
-2. **Ensuring integration**:
-   - (a) Agent receives necessary information from other agents
-   - (b) Agent faithfully and effectively communicates its work
+To make this analysis effortless, we provide **custom Claude Code slash commands** (available in the repository's <code>.claude/commands/</code> directory):
+- <code>/analyze_agent_context</code> - Automatically identifies when agents lack necessary information from other agents
+- <code>/refine_agent_prompt</code> - Suggests specific improvements to enhance agent communication effectiveness
 
-We want to allow users to zoom in on (1), especially (1)(b). To make (2) easier, **freephdlabor automatically tracks all LLM calls** made by all agents, organized in temporal order, in <code>agent_llm_calls.jsonl</code>. As recent research indicates[^7][^8], systematically analyzing <code>agent_llm_calls.jsonl</code> (especially across different runs) can enable a coding assistant, specialized agent, or fine-tuned LLM like AgentTracer-8B[^8] to identify points for improvement.
-
-E.g., users can use these **Claude Code slash commands**:
-- <code>/analyze_agent_context</code> - Helps ensure agents receive necessary information 
-- <code>/refine_agent_prompt</code> - Helps improve agent communication effectiveness
-
-At the moment, suggested improvements center around system prompts, but in the future, with better context engineering and coding assistants, we plan to support more general improvements involving code changes.
+As recent research indicates[^7][^8], systematically examining these LM call traces—especially across different runs—enables coding assistants and fine-tuned LLMs like AgentTracer-8B[^8] to identify key improvement opportunities. Users can focus on the creative work of defining agent roles and selecting appropriate tools, while the system provides intelligent guidance for integration challenges.
 
 ### Towards continual collaboration
 
