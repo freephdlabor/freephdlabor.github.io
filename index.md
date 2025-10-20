@@ -71,7 +71,7 @@ code:not([class]) {
   <a href="https://github.com/ltjed/freephdlabor">
     <img src="https://img.shields.io/github/stars/ltjed/freephdlabor?style=for-the-badge" alt="GitHub Stars">
   </a>
-  <a href="https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf">
+  <a href="https://arxiv.org/abs/2510.15624">
     <img src="https://img.shields.io/badge/Paper-Technical_Report-blue?style=for-the-badge&logo=arxiv" alt="Technical Report">
   </a>
 </p>
@@ -97,7 +97,7 @@ The most exciting goal in AI today is arguably to **accelerate scientific progre
 
 Despite recent work has shown exciting promise, such a dream assistant remains out of reach. No existing system can flexibly adapt to any scientific subdomain while autonomously managing its context for sustained, long-term research programs.
 
-In this blog, we will dive into how `freephdlabor` tackles the fundamental challenges preventing this vision, enabling you to build a customized AI research system for own research needs. We focus on key design principles and intuitions; for complete implementation and the full set of features, please refer to our [technical report](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf).
+In this blog, we will dive into how `freephdlabor` tackles the fundamental challenges preventing this vision, enabling you to build a customized AI research system for own research needs. We focus on key design principles and intuitions; for complete implementation and the full set of features, please refer to our [technical report](https://arxiv.org/abs/2510.15624).
 
 ---
 ## What's Holding Us Back
@@ -276,7 +276,7 @@ Since <code>agent_llm_calls.jsonl</code> contains the LLM calls (i.e., state-act
 
 Ready to build your own AI research team? Check out:
 - **GitHub Repository**: [https://github.com/ltjed/freephdlabor](https://github.com/ltjed/freephdlabor)
-- **Full Technical Report**: [PDF](https://github.com/ltjed/freephdlabor/blob/main/TR/technical_report/paper.pdf)
+- **Full Technical Report**: [arXiv:2510.15624](https://arxiv.org/abs/2510.15624)
 
 We welcome contributions, feedback, and discussions. Join us in democratizing AI-powered scientific discovery!
 
