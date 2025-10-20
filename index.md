@@ -303,3 +303,19 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 [^9]: HuggingFace. (2024). *smolagents Documentation*. [https://huggingface.co/docs/smolagents](https://huggingface.co/docs/smolagents)
 
 [^10]: Gao, J., et al. (2025). *Democratizing AI scientists using ToolUniverse*. arXiv preprint arXiv:2509.23426. [https://arxiv.org/abs/2509.23426](https://arxiv.org/abs/2509.23426)
+
+---
+
+## Citation
+
+If you find this work useful, please cite:
+
+```bibtex
+@article{li2024freephdlabor,
+  title={Build Your Personalized Research Group: A Multiagent Framework for Continual and Interactive Science Automation},
+  author={Li, Ed and Ren, Junyu and Pan, Xintian and Yan, Cat and Li, Chuanhao and Bergemann, Dirk and Yang, Zhuoran},
+  journal={arXiv preprint arXiv:2510.15624},
+  year={2024},
+  url={https://arxiv.org/abs/2510.15624}
+}
+```
