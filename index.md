@@ -5,18 +5,18 @@ body {
 }
 
 h1 {
-  font-size: 2.2em !important;
+  font-size: 1.8em !important;
   line-height: 1.3 !important;
 }
 
 h2 {
-  font-size: 1.8em !important;
+  font-size: 1.4em !important;
   margin-top: 2.5em !important;
   line-height: 1.4 !important;
 }
 
 h3 {
-  font-size: 1.4em !important;
+  font-size: 1.2em !important;
   line-height: 1.5 !important;
 }
 
