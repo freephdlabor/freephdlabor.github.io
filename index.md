@@ -311,11 +311,11 @@ We welcome contributions, feedback, and discussions. Join us in democratizing AI
 If you find this work useful, please cite:
 
 ```bibtex
-@article{li2024freephdlabor,
+@article{li2025freephdlabor,
   title={Build Your Personalized Research Group: A Multiagent Framework for Continual and Interactive Science Automation},
   author={Li, Ed and Ren, Junyu and Pan, Xintian and Yan, Cat and Li, Chuanhao and Bergemann, Dirk and Yang, Zhuoran},
   journal={arXiv preprint arXiv:2510.15624},
-  year={2024},
+  year={2025},
   url={https://arxiv.org/abs/2510.15624}
 }
 ```
