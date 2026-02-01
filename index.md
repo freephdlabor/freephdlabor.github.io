@@ -69,7 +69,7 @@ code:not([class]) {
 
 <p align="center">
   <a href="https://github.com/ltjed/freephdlabor">
-    <img src="https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github" alt="GitHub Repository">
+    <img src="https://img.shields.io/badge/GitHub-Try_freephdlabor-black?style=for-the-badge&logo=github" alt="Try freephdlabor">
   </a>
   <a href="https://github.com/ltjed/freephdlabor">
     <img src="https://img.shields.io/github/stars/ltjed/freephdlabor?style=for-the-badge&color=gold" alt="GitHub Stars">
