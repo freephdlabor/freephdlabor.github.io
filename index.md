@@ -75,7 +75,7 @@ code:not([class]) {
     <img src="https://img.shields.io/github/stars/ltjed/freephdlabor?style=for-the-badge" alt="GitHub Stars">
   </a>
   <a href="https://arxiv.org/abs/2510.15624">
-    <img src="https://img.shields.io/badge/Paper-Technical_Report-blue?style=for-the-badge&logo=arxiv" alt="Technical Report">
+    <img src="https://img.shields.io/badge/Paper-arXiv-B31B1B?style=for-the-badge&logo=arxiv" alt="arXiv Paper">
   </a>
 </p>
 
